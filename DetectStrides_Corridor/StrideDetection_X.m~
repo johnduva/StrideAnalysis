@@ -1,4 +1,4 @@
-function [minpkx, maxpkx, x_zero] = StrideDetection_X(preX, frames, numLimbs)
+function [minpkx,maxpkx,x_zero] = StrideDetection_X(preX, frames, numLimbs)
 
     for j=1:numLimbs % For each paw...
         
@@ -12,22 +12,22 @@ function [minpkx, maxpkx, x_zero] = StrideDetection_X(preX, frames, numLimbs)
                
         % Linear Regression (Find Slope 'm' and Intercept 'b' of the linear model)
         m = (max_value - min_value) / (max_value_frame - min_value_frame); % slope = delta y/delta x
-        b = max_value - m*(max_value_frame); % Intercept (y = max_value; x = max_value_frame)[y-mx=b]
+        b = max_value - m*(max_value_frame);        % Intercept of the linear model
         
-        for v=1:size(Xs(:,j),1) % for frame v 1:3501
-            linear_points(v) = (frames(v)*m)+b; % Find Row
+        for v=1:size(Xs(:,j),1)
+            linear_points(v) = (frames(v)*m)+b; %Find Row
         end
-        linear_points = linear_points.'; % the linear model itself (the diagnoal line that represents mx+b)
+        linear_points = linear_points.';
         
         %Conversion of X-Trajectory into peaks
         for p=1:size(Xs(:,j),1)
-            new_x_values(p) = Xs(p,j) - linear_points(p); % Actual value - linear value
+            new_x_values(p) = Xs(p,j)-linear_points(p); %Subtract each value to the X-Trajectory
         end
         
         %Remove offset(zero mean)
         mean_new_x = nanmean(new_x_values);
         for w=1:size(Xs(:,j),1)
-            x_zero{j}(w,1)= new_x_values(w) - mean_new_x;
+            x_zero{j}(w,1)= new_x_values(w)-mean_new_x;
             x_zero{j}(w,2)= w;
         end
         
