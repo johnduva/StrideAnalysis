@@ -21,13 +21,13 @@ function StrideDetection_PlotOnTracks(final_tracks_c, SwiSta, Fs, numLimbs)
         % distinguish the swings in white
         for swing_i = 1:total_strides
             idx = SwiSta.swing{paw_i}(swing_i) : SwiSta.stance{paw_i}(swing_i);
-            plot( idx/Fs, squeeze(final_tracks_c(1,paw_i,idx)),'w','LineWidth',1) % 'w' = white
+            plot(idx/Fs, squeeze(final_tracks_c(1,paw_i,idx)),'w','LineWidth',1) % 'w' = white
         end
         
         % distinguish the stances in black
         for stance_i = 1:total_strides-1 
             idx = SwiSta.stance{paw_i}(stance_i):SwiSta.swing{paw_i}(stance_i+1);
-            plot(idx/Fs,squeeze(final_tracks_c(1,paw_i,idx)),'k','LineWidth',1) % 'k' = black
+            plot(idx/Fs, squeeze(final_tracks_c(1,paw_i,idx)),'k','LineWidth',1) % 'k' = black
         end
         
     end

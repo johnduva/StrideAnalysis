@@ -26,8 +26,8 @@ function StrideData = StrideDetection_OG(final_tracks_c,Fs)
     % X-values for all paws and snout
     preX = squeeze(final_tracks_c(1,:,:))';
     
-	[minpkx, maxpkx]  = StrideDetection_X(preX, numLimbs);
-  	[new_swings, new_stances]  =  StrideDetection_NewDataPoints(preX, minpkx, maxpkx, numLimbs);
+	[minpkx, maxpkx]  =  StrideDetection_X(preX, numLimbs);
+  	[new_swings, new_stances]  =  StrideDetection_NewDataPoints(x_zero, minpkx, maxpkx, numLimbs);
         
     StrideData.swing = cell(1,numLimbs);
     StrideData.stance = cell(1,numLimbs);

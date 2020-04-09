@@ -1,37 +1,23 @@
-function [new_swings, new_stances]= StrideDetection_NewDataPoints(x_zero, minpkx, maxpkx, numLimbs)
+function [new_swings, new_stances]= StrideDetection_NewDataPoints(preX, minpkx, maxpkx, numLimbs)
 
     for j=1:numLimbs % For each paw...
-        
 	%% Swings
         %Diff Data Points
-        % Derivative of the X-Trajectory converted into peaks, with zero mean.
-        x_zero_diff{j} = diff(x_zero{j}(:,1));  %#ok<AGROW> 
-        x_zero_diff{j}(:,2) = 1:size(x_zero{j},1)-1; %#ok<AGROW>
         
         %Find positive values in derivative (Approach 1)
         positive_frames = find(x_zero_diff{j}(:,1)>0);
-        pos_diff = x_zero_diff{j}(positive_frames,1);
-        swing_slope = nanmax(pos_diff);  %Slope of Approach 1
         
         %Goes to the end of the data points
-        mins = minpkx{j}(:,1);
-        diff_data = cat(1,mins,length(x_zero_diff{j}));  %Goes to the end of the data points
-        new_swing_points{j} = NaN(size(diff_data-1,1));
         
         for n = 1:size(diff_data)-1
-            
-            for m = diff_data(n):diff_data(n+1)
-                range_threshold = m:m+10; %Search the number of frames until find a big slope
-                first = m(1);
-                
+          
                 if (x_zero_diff{j}(first) > swing_slope & x_zero_diff{j}(range_threshold) > swing_slope)
                     new_swing_points{j}(n) = first;
                     break;
                 else
                     new_swing_points{j}(n) = minpkx{j}(n,1);
                 end
-                
-            end
+
         end
         
         mean_swing_distribution = 0; %Mean Value Swing Bias
