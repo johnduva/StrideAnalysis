@@ -48,6 +48,6 @@ for frame = 1:length(preX)
             end
         end
         
-    % do we need an edge case at the end?
+    % do we need an edge case at the end when there 
     else
 end

@@ -1,22 +1,19 @@
-%[SwiSta] = DE_SwingStanceDetection(labels)
-% 
 % TAKES: 
-% final_tracks_c from the LocoMouse_Track results.
-% Fs - framerate
+%   - final_tracks_c: tracking results
+%   - Fs: framerate
 %
 % RETURNS:
 % Start frames of identified swings and stances.
 %
 % NEEDS:
-% - inpaint_nans()
 % - StrideDetection_X() [original code outsourced into different function files]
 % - StrideDetection_NewDataPoints() [original code outsourced into different function files]
 
-% Dennis Eckmeier, 2015
-% Based on correcmatfinal_wild_400_04_018_mutant.m by Carey lab
+% Dennis Eckmeier, 2015 ... and John D'Uva, 2020
 
-final_tracks_c = front_paws;
-Fs = 80;
+% Uncomment to walk through a loop and debug:
+% final_tracks_c = front_paws;
+% Fs = 80;
 
 function StrideData = StrideDetection_OG(final_tracks_c,Fs) 
     % extract second dimension from 3D dataset
