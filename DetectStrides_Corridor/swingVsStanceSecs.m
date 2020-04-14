@@ -1,9 +1,9 @@
 % Returns:
 %   - Total number of swing seconds ('totalSwingSecs')
-%   - Number of stance seconds ('totalStanceSecs')
+%   - Total number of stance seconds ('totalStanceSecs')
 %   - Proportion of stance to swing seconds ('stanceProportion')
-%   - All of the above information across n (10) bins ('stance_tenths')
-%       * includes n columns for each bin
+%   - Spreadsheet of all of the above information across 10 bins ('stance_tenths')
+%       * includes 10 columns for each bin
 %       * Row 1: stance frames
 %       * Row 2: num of stance seconds per column (per bin)
 %       * Row 3: num of swing seconds per column (per bin)
