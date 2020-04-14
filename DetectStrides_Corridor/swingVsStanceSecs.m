@@ -1,3 +1,9 @@
+% Takes:
+%   - Array of swing frames (swing_frames)
+%   - Array of stance frames (stance_frames)
+%   - Frames per second (Fs)
+%   (all of which are generated via 'Stride_Detection_OG.m')
+%
 % Returns:
 %   - Total number of swing seconds ('totalSwingSecs')
 %   - Total number of stance seconds ('totalStanceSecs')
