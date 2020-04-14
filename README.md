@@ -1,10 +1,7 @@
-The guts of this package were originally written by Dana Darmohray and Ana Machado within the Carey lab at Champalimaud Foundation. 
-It's contents can be found here: https://github.com/careylab/LocoMouse_AnalysisTools
+The main (parent) script within this package ("StrideDetection_OG.m") was originally written by Dana Darmohray, Ana Machado, and Dennis Eckmeier within the Carey lab at Champalimaud Foundation. The children scripts "StrideDetection_PlotOnTracks.m", "StrideDetection_X.m", and "StrideDetection_NewDataPoints.m" have been drastically altered by John D'Uva to handle the Wang Lab's sLEAP tracking data. 
 
-This iteration of the code has some changes:
-  - improved notation/explanation
-  - inclusion of helper scripts that allow sLEAP output to me massaged into readable format
-  - (will update these as time goes on)
+The contents of the original scripts can be found here: https://github.com/careylab/LocoMouse_AnalysisTools
 
-The goal is to allow the Wang Lab to utilize these scripts with their behavioral data. 
-All of these changes were written by John D'Uva in Q1 and Q2 of 2020.
+The goal of this repo is to allow the Wang Lab to continue utilizing the included scripts and to allow sLEAP analysis to be accessible to the entire lab.
+
+All of these changes were written by John D'Uva (jduva4@jhu.edu) in Q2 of 2020.
