@@ -1,4 +1,4 @@
-function [avgStrideLength] = avgStrideLength(minpkx, maxpkx)
+function [avgStrideDist] = avgStrideDist(minpkx, maxpkx)
     minIDX = minpkx{1}(:,1); 
     maxIDX = maxpkx{1}(:,1); 
     dist = 0;
@@ -7,5 +7,5 @@ function [avgStrideLength] = avgStrideLength(minpkx, maxpkx)
         dist = dist + maxIDX(i)-minIDX(i);
     end
     
-    avgStrideLength = dist / min(length(minIDX),length(maxIDX));
+    avgStrideDist = dist / min(length(minIDX),length(maxIDX));
 end
