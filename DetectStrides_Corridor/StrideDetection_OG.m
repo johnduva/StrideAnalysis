@@ -1,15 +1,9 @@
-% TAKES: 
-%   - final_tracks_c: tracking results
-%   - Fs: framerate
-%
 % RETURNS:
 % Start frames of identified swings and stances.
 %
 % NEEDS:
-% - StrideDetection_X() [original code outsourced into different function files]
-% - StrideDetection_NewDataPoints() [original code outsourced into different function files]
-
-% Dennis Eckmeier, 2015 ... and John D'Uva, 2020
+% - swing_stance_frames.m
+% - StrideDetection_NewDataPoints()
 
 % Uncomment to walk through a loop and debug:
 % final_tracks_c = front_paws;
@@ -20,17 +14,28 @@ function StrideData = StrideDetection_OG(final_tracks_c,Fs)
     numLimbs = size(final_tracks_c, 2);
     % number of total frames
     frames = (1:size(final_tracks_c,3))';
-    % X-values for all paws and snout
+    % x-values for all paws ("and snout"?)
     preX = squeeze(final_tracks_c(1,:,:))';
     
-	[minpkx, maxpkx]  = StrideDetection_X(preX, numLimbs);
-  	[new_swings, new_stances]  =  StrideDetection_NewDataPoints(preX, minpkx, maxpkx, numLimbs);
-        
+     % Calculate peaks and valleys for each paw
+     for j=1:numLimbs 
+        [maxpkx{j}, minpkx{j}] = peakdet(preX(:,j), 3); 
+        %Do not consider first peak if frame of first peak < 1
+        if maxpkx{j}(1,1) <= 5
+            maxpkx{j} = cat(2,maxpkx{j}(2:end,1), maxpkx{j}(2:end,2));
+        end
+        if minpkx{j}(1,1)<=5
+            minpkx{j} = cat(2,minpkx{j}(2:end,1), minpkx{j}(2:end,2));
+        end
+    end
+    
+  	[stance_frames, swing_frames]  =  swing_stance_frames(minpkx, maxpkx, numLimbs, frames);
+    
     StrideData.swing = cell(1,numLimbs);
     StrideData.stance = cell(1,numLimbs);
-    for n = 1:numLimbs
-        StrideData.swing{n}  = frames(cell2mat(new_swings(:,n)));
-        StrideData.stance{n} = frames(cell2mat(new_stances(:,n)));
+    for j = 1:numLimbs
+        StrideData.swing{j}  = frames(cell2mat(swing_frames(:,j)));
+        StrideData.stance{j} = frames(cell2mat(stance_frames(:,j)));
     end
     
      StrideDetection_PlotOnTracks(final_tracks_c, StrideData, Fs, numLimbs);
