@@ -3,8 +3,6 @@ LT = squeeze(LF_flipped)';
 paws = [RT(:,1),LT(:,1)];
 plot(paws)
 
-Xs(:,j) = smooth( inpaint_nans( preX(:,j),4),1); % Filtering and Interpolation of NaNs values
-
 colors={'r','b'};
 for n = 1:2
     plot(paws(:,n),'color',colors{n}); hold on; 
@@ -13,6 +11,4 @@ for n = 1:2
     
     plot(stance_pts{n}(:,1),stance_pts{n}(:,2),'mo')
     plot(swing_pts{n}(:,1),swing_pts{n}(:,2),'gs'); hold on;
-
-    
 end
