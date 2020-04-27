@@ -14,6 +14,12 @@ Calculated Features:
   - Stance width 
   - distance between front left paw and back left paw to describe the gait difference when left paws move in unison (ASD) and when diagonal paws move in unison (wildtype)
   - velocity metrics (average mouse speed during locomotion,
+  - stride length (mm)
+  - cadence (strides/s)
+  - swing velocity (m/s)
+  - stance duration (ms)
+  - mouse's walking speed (m/s)
+
         
   - Conditions: 
         * b/t forepaws
