@@ -6,9 +6,9 @@
 % and changing to other behavior,
 % then check if 'holder' >= 10. If so, push 'holder' to 'keepersOnly.'
 
-function keepersOnly = keepers_Only(allcGuesses, tensOnly)
+function keepersOnly = keepers_Only(allcGuesses3, tensOnly)
     % create skeleton of new matrix
-    keepersOnly = num2cell(NaN(size(allcGuesses)));
+    keepersOnly = num2cell(NaN(size(allcGuesses3)));
     % set threshold for minimum number of frames considered a bout
     minThresh = 10;
     % for each animal, for each session...
@@ -44,6 +44,7 @@ function keepersOnly = keepers_Only(allcGuesses, tensOnly)
            keepersOnly{an,day} = keepersOnly{an,day}(2:end);
 
         end
+        disp(an);
     end
 end
 
