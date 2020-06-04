@@ -10,6 +10,7 @@
 
 'CorrectedTens' = Go through each cell in 'corrected' and only keep the frames that we have determined are within a bout of 10 (locomotion).
 
+<<<<<<< HEAD
 phenos = 
 1: C57Bl_ans
 2: CNOonly2D_ans
@@ -21,6 +22,8 @@ phenos =
 8: LobVI1D_ans
 9: Vehicle2D
 
+=======
+>>>>>>> db569478b32063e1bcb473b56ef5ddae86e57bc3
 Calculated Features:
   - Stance width 
   - distance between front left paw and back left paw to describe the gait difference when left paws move in unison (ASD) and when diagonal paws move in unison (wildtype)
