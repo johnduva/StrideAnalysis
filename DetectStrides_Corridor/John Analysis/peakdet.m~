@@ -47,7 +47,8 @@ lookformax = 1;
 for i=1:length(v)
     this = v(i);
     if i < mnpos+delta || i < mxpos+delta
-        continue
+        
+%         continue
     else
         if this > mx, mx = this; mxpos = x(i); end
         if this < mn, mn = this; mnpos = x(i); end

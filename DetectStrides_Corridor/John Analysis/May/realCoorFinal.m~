@@ -92,8 +92,7 @@ for an = 1:1%length(phenos{1,1}(1,:))
         colors = {'r','b','g','k'};
         for k = 1:numLimbs
             strideVsVel = zeros( size(maxpkx{1,k},1), 2);
-            
-            % (A) For current paw, if index of first min < index of first max...
+            % if index of first min < index of first max...
             if minpkx{1,k}(1,1) <= maxpkx{1,k}(1,1)
                 % For each of the maxpkx's
                 for i = 1:size(maxpkx{1, k},1)-1
@@ -104,34 +103,30 @@ for an = 1:1%length(phenos{1,1}(1,:))
                         continue
                     else
                         % stride length (max - min)
-                        xdist = abs( ff(k, 1, maxpkx{1,k}(i+1)) - ff(k, 1, maxpkx{1,k}(i)));
-                        ydist = abs( ff(k, 2, maxpkx{1,k}(i+1)) - ff(k, 2, maxpkx{1,k}(i)));
+                        xdist = abs( ff(k, 1, maxpkx{1, k}(i+1)) - ff(k, 1, minpkx{1, k}(i)) );
+                        ydist = abs( ff(k, 2, maxpkx{1, k}(i)) - ff(k, 2, minpkx{1, k}(i)) );
                         strideVsVel(i,1) = sqrt( xdist^2 + ydist^2);
                         % mean centroid velocity during that stride
                         strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i,1), 1));
                     end
                 end
                 
-            % (B) If the first max < first min
+            % if the first max < first min
             else % minpkx{1,k}(1,1) > maxpkx{1,k}(1,1)
                for i = 1:size(maxpkx{1, k},1)-1
                     % If the current peak and the previous peak are not in the same bout of locomotion, 
                     % then do not consider their distance from each other.
-                    if keepersOnly{pORa{phe}(1,an),day}(maxpkx{1, k}(i+1)) - keepersOnly{pORa{phe}(1,an),day}(minpkx{1, k}(i)) ...
-                            ~= maxpkx{1, k}(i+1) - minpkx{1, k}(i)
+                    if keepersOnly{pORa{phe}(1,an),day}(maxpkx{1, k}(i+1)) - keepersOnly{pORa{phe}(1,an),day}(minpkx{1, k}(i)) ~= maxpkx{1, k}(i+1) - minpkx{1, k}(i)
                         continue
                     else
                         % stride length (max - min)
-                        xdist = abs( ff(k, 1, maxpkx{1,k}(i+1)) - ff(k, 1, maxpkx{1,k}(i)));
-                        ydist = abs( ff(k, 2, maxpkx{1,k}(i+1)) - ff(k, 2, maxpkx{1,k}(i)));
+                        xdist = abs( ff(k, 1, maxpkx{1,k}(i+1)) - ff(k, 1, minpkx{1,k}(i)) );
+                        ydist = abs( ff(k, 2, maxpkx{1,k}(i+1)) - ff(k, 2, minpkx{1,k}(i)) );
                         strideVsVel(i,1) = sqrt( xdist^2 + ydist^2);
                         % mean centroid velocity during that stride
                         strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i+1,1), 1));
                     end
                end 
-               strideVsVel(i,3) = weight?
-               strideVsVel(i,4) = pheno??
-               strideVsVel(i,5) = an?
             end
             
             
