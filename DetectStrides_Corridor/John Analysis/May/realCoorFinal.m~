@@ -1,5 +1,6 @@
-% if the current frame is the first or last in a series, don't consider it 
-% if keepersOnly{pORa{phe}(1,an),day}
+% (1) Loop through each animal, each day and extract egocentric coordinates from correctedTens5 for four paws 
+% (2) Use custom peakdet() in 'John Analysis' to extract max and min peaks from egocentric 'preY'
+% (3) Pull the real space centroid locations from 'allTracks'
 
 pORa = phenos;
 Fs = 80;
@@ -11,14 +12,14 @@ for an = 1:1%length(phenos{1,1}(1,:))
     for day = 1:1%length( correctedTens5(pORa{phe}(1,an),:) )
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % 1. Get session's four paw locations from 'correctedTens5' and isolate the y-vals into four vectors of 'preY'
+        % (1) Get session's four paw locations from 'correctedTens5' and isolate the y-vals into four vectors of 'preY'
         allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 3]);
         numLimbs = size(allPaws, 2);
         % y-values for all paws (correct for pixels to mm (for each pixel, there are 1.97 millimeters)
         preY = squeeze(allPaws(2,:,:))';
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % For each paw, calculate which frames are peaks/valleys
+        % (2) For each paw, calculate which frames are peaks/valleys
         for k = 1:numLimbs                 
             [maxpkx{k}, minpkx{k}] = peakdet(preY(:,k), 8); 
             % Do not consider first peak if frame of first peak < 1 
@@ -92,7 +93,8 @@ for an = 1:1%length(phenos{1,1}(1,:))
         colors = {'r','b','g','k'};
         for k = 1:numLimbs
             strideVsVel = zeros( size(maxpkx{1,k},1), 2);
-            % if index of first min < index of first max...
+            
+            % (A) For current paw, if index of first min < index of first max...
             if minpkx{1,k}(1,1) <= maxpkx{1,k}(1,1)
                 % For each of the maxpkx's
                 for i = 1:size(maxpkx{1, k},1)-1
@@ -103,30 +105,43 @@ for an = 1:1%length(phenos{1,1}(1,:))
                         continue
                     else
                         % stride length (max - min)
-                        xdist = abs( ff(k, 1, maxpkx{1, k}(i+1)) - ff(k, 1, minpkx{1, k}(i)) );
-                        ydist = abs( ff(k, 2, maxpkx{1, k}(i)) - ff(k, 2, minpkx{1, k}(i)) );
+                        xdist = abs( ff(k, 1, maxpkx{1,k}(i+1)) - ff(k, 1, maxpkx{1,k}(i)));
+                        ydist = abs( ff(k, 2, maxpkx{1,k}(i+1)) - ff(k, 2, maxpkx{1,k}(i)));
                         strideVsVel(i,1) = sqrt( xdist^2 + ydist^2);
                         % mean centroid velocity during that stride
                         strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i,1), 1));
+                        
+                        strideVsVel(i,3) = cell2mat(weights_WT_ASD(pORa{phe}(1,an)));
+                        if phe == 1 && length(pORa) == length(phenos)
+                           strideVsVel(i,4) = 0; % C57Bl
+                        end
+                        strideVsVel(i,5) = pORa{phe}(1,an);
                     end
                 end
                 
-            % if the first max < first min
+            % (B) If the first max < first min
             else % minpkx{1,k}(1,1) > maxpkx{1,k}(1,1)
-               for i = 1:size(maxpkx{1, k},1)-1
+                for i = 1:size(maxpkx{1, k},1)-1
                     % If the current peak and the previous peak are not in the same bout of locomotion, 
                     % then do not consider their distance from each other.
-                    if keepersOnly{pORa{phe}(1,an),day}(maxpkx{1, k}(i+1)) - keepersOnly{pORa{phe}(1,an),day}(minpkx{1, k}(i)) ~= maxpkx{1, k}(i+1) - minpkx{1, k}(i)
+                    if keepersOnly{pORa{phe}(1,an),day}(maxpkx{1, k}(i+1)) - keepersOnly{pORa{phe}(1,an),day}(minpkx{1, k}(i)) ...
+                            ~= maxpkx{1, k}(i+1) - minpkx{1, k}(i)
                         continue
                     else
                         % stride length (max - min)
-                        xdist = abs( ff(k, 1, maxpkx{1,k}(i+1)) - ff(k, 1, minpkx{1,k}(i)) );
-                        ydist = abs( ff(k, 2, maxpkx{1,k}(i+1)) - ff(k, 2, minpkx{1,k}(i)) );
+                        xdist = abs( ff(k, 1, maxpkx{1,k}(i+1)) - ff(k, 1, maxpkx{1,k}(i)));
+                        ydist = abs( ff(k, 2, maxpkx{1,k}(i+1)) - ff(k, 2, maxpkx{1,k}(i)));
                         strideVsVel(i,1) = sqrt( xdist^2 + ydist^2);
                         % mean centroid velocity during that stride
                         strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i+1,1), 1));
+                        
+                        strideVsVel(i,3) = cell2mat(weights_WT_ASD(pORa{phe}(1,an)));
+                        if phe == 1 && length(pORa) == length(phenos)
+                           strideVsVel(i,4) = 0; % C57Bl
+                        end
+                        strideVsVel(i,5) = pORa{phe}(1,an);
                     end
-               end 
+                end
             end
             
             
