@@ -4,9 +4,9 @@
 pORa = phenos;
 Fs = 80;
 phe = 1; % C57Bl
-strideVelFinal = zeros(1, 2);
-strideVelFront = zeros(1, 2);
-strideVelRear = zeros(1, 2);
+strideVelFinal = zeros(1, 5);
+% strideVelFront = zeros(1, 2);
+% strideVelRear = zeros(1, 2);
 for an = 1:1%length(phenos{1,1}(1,:)) 
     for day = 1:1%length( correctedTens5(pORa{phe}(1,an),:) )
         
@@ -127,6 +127,7 @@ for an = 1:1%length(phenos{1,1}(1,:))
                     end
                end 
             end
+            
             
             strideVelFinal = [strideVelFinal; strideVsVel];
 
