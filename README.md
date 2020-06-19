@@ -1,4 +1,4 @@
-The parent script within this package ("StrideDetection_OG.m") and the child script ("StrideDetection_PlotOnTracks.m") were originally written by the Carey lab at Champalimaud Foundation. They have been significantly altered by John D'Uva to handle the Wang Lab's sLEAP tracking data (the other children scripts were removed since they were not applicable). John also added further gait analysis scripts including "avg_dist.m", "avgStrideLength.m", and "swingVsStanceSecs.m."
+The original script within this package ("StrideDetection_OG.m") and the child script ("StrideDetection_PlotOnTracks.m") were originally written by the Carey lab at Champalimaud Foundation. They have been significantly altered by John D'Uva to handle the Wang Lab's sLEAP tracking data (the other children scripts were removed since they were not applicable). Further gait analysis scripts have been added in "John Analysis."
 
 The contents of the original scripts can be found here: https://github.com/careylab/LocoMouse_AnalysisTools
 
