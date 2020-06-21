@@ -2,14 +2,16 @@
 % (2) Use custom peakdet() in 'John Analysis' to extract max and min peaks from egocentric 'preY'
 % (3) Pull the real space centroid locations from 'allTracks'
 
-pORa = phenos;
+% 0=C57, 1=TscHet...
+pheno = 1;
+% ASD_all or phenos:
+pORa = ASD_all; % or phenos
 Fs = 80;
-phe = 1; % C57Bl
-strideVelFinal = zeros(1, 5);
-% strideVelFront = zeros(1, 2);
-% strideVelRear = zeros(1, 2);
-for an = 1:length(phenos{1,1}(1,:)) 
-    for day = 1:1%length( correctedTens5(pORa{phe}(1,an),:) )
+phe = 1; 
+% strideVelFinal = zeros(1, 5); % don't need this since it's already created
+for an = 1:length(pORa{1,1}(1,:)) 
+    % length( correctedTens5(pORa{phe}(1,an),:) )
+    for day = 1:1
         disp(an);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % (1) Get session's four paw locations from 'correctedTens5' and isolate the y-vals into four vectors of 'preY'
@@ -46,7 +48,7 @@ for an = 1:length(phenos{1,1}(1,:))
         % Extract the name of the file by day for the session, and zero pad it
         vid = sprintf('%04d',cell2mat(files_by_day(pORa{phe}(1,an),day)));
         % Load rotVal from proper file
-        load(['/Users/johnduva/Desktop/C57vids/OFT-', vid, '-00_box_aligned_info.mat'], 'mouseInfo')
+        load(['/Users/johnduva/Desktop/ASDvids/OFT-', vid, '-00_box_aligned_info.mat'], 'mouseInfo')
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Change coordinates to real space
@@ -60,19 +62,16 @@ for an = 1:length(phenos{1,1}(1,:))
         ff = zeros(size(allPaws2));
 
         for i = 1:length(jx)
-
             [jp2j(:,i), jp2i(:,i)] = cart2pol(jx(:,i)',jy(:,i)');
-
             tjp(:,i) = jp2j(:,i) + repmat(tempr(i),[4 1]);
-
             [jp3j(:,i), jp3i(:,i)] = pol2cart(tjp(:,i),jp2i(:,i));
-
             ogc1(:,i) = jp3j(:,i) + centroidsF2(i,1);
             ogc2(:,i) = jp3i(:,i) + centroidsF2(i,2);
         end
+        
         ff(:,1,:) = ogc1; 
         ff(:,2,:) = ogc2;
-        clearvars tempt tempr tempCents midJoints jx jy jp2j jp2i tjp jp2j jp3j jp3i ogc1 ogc2;
+        clearvars jp2i jp2j jp3j jp3i jx jy midJoints ogc1 ogc2 tempt tempr tempCents tjp;
        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Get change in x-coordinate per frame (negative just means a change to the left)
@@ -112,8 +111,8 @@ for an = 1:length(phenos{1,1}(1,:))
                         strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i,1), 1));
                         % Save weight, pheno (dummy), and animal number
                         strideVsVel(i,3) = cell2mat(weights_WT_ASD(pORa{phe}(1,an)));
-                        if phe == 1 && length(pORa) == length(phenos)
-                           strideVsVel(i,4) = 0; % C57Bl
+                        if phe == 1 && length(pORa) == length(pORa)
+                           strideVsVel(i,4) = pheno; % TscHet
                         end
                         strideVsVel(i,5) = pORa{phe}(1,an);
                     end
@@ -136,8 +135,8 @@ for an = 1:length(phenos{1,1}(1,:))
                         strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i+1,1), 1));
                         % Save weight, pheno (dummy), and animal number
                         strideVsVel(i,3) = cell2mat(weights_WT_ASD(pORa{phe}(1,an)));
-                        if phe == 1 && length(pORa) == length(phenos)
-                           strideVsVel(i,4) = 0; % C57Bl
+                        if phe == 1 && length(pORa) == length(pORa)
+                           strideVsVel(i,4) = pheno; % TscHet
                         end
                         strideVsVel(i,5) = pORa{phe}(1,an);
                     end
@@ -172,6 +171,8 @@ for i = 1: length(strideVelFinal)
         strideVelFinal(i,:) = [];
     end
 end
+
+fullTbl = array2table(strideVelFinal, 'VariableNames', {'StrideLength', 'Speed', 'Weight', 'Pheno', 'Animal'});
 
 
 % x = strideVelFinal(:,2);

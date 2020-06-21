@@ -11,3 +11,4 @@ load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/filenames
 load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/weights.mat');
 
 load('/Users/johnduva/Git/LocoMouse_AnalysisTools/DetectStrides_Corridor/John Analysis/phenosAll.mat')
+load('/Users/johnduva/Git/LocoMouse_AnalysisTools/DetectStrides_Corridor/John Analysis/ASD_all.mat') 
