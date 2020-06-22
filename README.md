@@ -1,7 +1,6 @@
-The original script within this package ("StrideDetection_OG.m") and the child script ("StrideDetection_PlotOnTracks.m") were originally written by the Carey lab at Champalimaud Foundation. They have been significantly altered by John D'Uva to handle the Wang Lab's sLEAP tracking data (the other children scripts were removed since they were not applicable). Further gait analysis scripts have been added in "John Analysis."
+This repo is a collection of analysis scripts that intake LEAP coordinate locations and output gait analysis figures.
 
-The contents of the original scripts can be found here: https://github.com/careylab/LocoMouse_AnalysisTools
-
-The goal of this repo is to allow the Wang Lab to continue utilizing the included scripts and to allow sLEAP analysis to be accessible to the entire lab.
-
+"StrideDetection_OG.m" and child script "StrideDetection_PlotOnTracks.m" were originally written by the Carey lab at Champalimaud Foundation. 
+They have been significantly altered to handle the Wang Lab's LEAP tracking data, while the other children scripts were removed since they were not applicable. 
 All of these changes were written by John D'Uva (jduva4@jhu.edu) in Q2 of 2020.
+
