@@ -5,11 +5,11 @@
 % 0=C57, 1=TscHet...
 pheno = 1;
 % ASD_all or phenos:
-pORa = ASD_all; % or phenos
+pORa = ASD_all;
 Fs = 80;
 phe = 1; 
 strideVelFinal = zeros(1, 5); % don't need this since it's already created
-for an = 1:length(pORa{1,1}(1,:)) 
+for an = 1:1%length(pORa{1,1}(1,:)) 
     % length( correctedTens5(pORa{phe}(1,an),:) )
     for day = 1:1
         disp(an);
@@ -145,7 +145,7 @@ for an = 1:length(pORa{1,1}(1,:))
             
             strideVelFinal = [strideVelFinal; strideVsVel];
 
-            figure(2)
+            figure(1)
             xNow = strideVsVel(:,2);
             yNow = strideVsVel(:,1);
           
@@ -162,7 +162,7 @@ for an = 1:length(pORa{1,1}(1,:))
 end
 
 clear allPaws allPaws2 an centroidsF2 colors day ff frame Fs i index k mouseInfo ...
-    numLimbs phe pheno pORa preY strideVsVel vel vid xdist xNow ydist yNow % maxpkx minpkx
+    numLimbs phe pheno pORa preY strideVsVel vid xdist xNow ydist yNow % maxpkx minpkx vel
 
 
 %%
