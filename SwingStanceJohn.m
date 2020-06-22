@@ -1,5 +1,8 @@
+correctedTens5{198,1}()
+allPaws = permute( correctedTens5{198,1}([5,6,9,10], : , :), [2 1 3]);
 
-RT=squeeze(RF)';
+
+RT = squeeze(allPaws(2,1,:))';
 LT=squeeze(LF)';
 
 paws=[RT(:,1),LT(:,1)];

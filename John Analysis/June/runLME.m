@@ -5,11 +5,15 @@ lme2 = fitlme(fullTbl,'StrideLength ~ Speed + Weight + (1+Speed|Animal)');
 lme3 = fitlme(fullTbl,'StrideLength ~ Speed + Weight + Pheno + (1+Speed|Animal)');
 
 
-
 %% Comapre models using Theoretical Likelihood Ratio Test
 % Significant pVals imply better models
 compare(lme1,lme2)
 compare(lme2,lme3)
 
-
 %%
+F = fitted(lme3);
+R = response(lme3);
+figure();
+scatter(R,F,1,'rx')
+xlabel('Response')
+ylabel('Fitted')

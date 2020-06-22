@@ -8,7 +8,7 @@ pheno = 1;
 pORa = ASD_all; % or phenos
 Fs = 80;
 phe = 1; 
-% strideVelFinal = zeros(1, 5); % don't need this since it's already created
+strideVelFinal = zeros(1, 5); % don't need this since it's already created
 for an = 1:length(pORa{1,1}(1,:)) 
     % length( correctedTens5(pORa{phe}(1,an),:) )
     for day = 1:1
@@ -97,10 +97,12 @@ for an = 1:length(pORa{1,1}(1,:))
             if minpkx{1,k}(1,1) <= maxpkx{1,k}(1,1)
                 % For each of the maxpkx's
                 for i = 1:size(maxpkx{1, k},1)-1
-                    % If the current max and the previous min are not in the same bout of locomotion, 
+                    % If the next max and the current max are not in the same bout of locomotion, 
                     % then do not consider their distance from each other.
-                    if keepersOnly{pORa{phe}(1,an),day}(maxpkx{1, k}(i)) - keepersOnly{pORa{phe}(1,an),day}(minpkx{1, k}(i)) ...
-                            ~= maxpkx{1, k}(i) - minpkx{1, k}(i)
+                    if keepersOnly{pORa{phe}(1,an),day}(maxpkx{1, k}(i+1)) - keepersOnly{pORa{phe}(1,an),day}(maxpkx{1, k}(i)) ...
+                            ~= maxpkx{1, k}(i+1) - maxpkx{1, k}(i)
+%                     if keepersOnly{pORa{phe}(1,an),day}(maxpkx{1, k}(i)) - keepersOnly{pORa{phe}(1,an),day}(minpkx{1, k}(i)) ...
+%                             ~= maxpkx{1, k}(i) - minpkx{1, k}(i)
                         continue
                     else
                         % stride length (max - min)
@@ -121,19 +123,17 @@ for an = 1:length(pORa{1,1}(1,:))
             % (B) If the first max < first min
             else % minpkx{1,k}(1,1) > maxpkx{1,k}(1,1)
                 for i = 1:size(maxpkx{1, k},1)-1
-                    % If the current peak and the previous peak are not in the same bout of locomotion, 
-                    % then do not consider their distance from each other.
-                    if keepersOnly{pORa{phe}(1,an),day}(maxpkx{1, k}(i+1)) - keepersOnly{pORa{phe}(1,an),day}(minpkx{1, k}(i)) ...
-                            ~= maxpkx{1, k}(i+1) - minpkx{1, k}(i)
+                    if keepersOnly{pORa{phe}(1,an),day}(maxpkx{1, k}(i+1)) - keepersOnly{pORa{phe}(1,an),day}(maxpkx{1, k}(i)) ...
+                            ~= maxpkx{1, k}(i+1) - maxpkx{1, k}(i)
+%                     if keepersOnly{pORa{phe}(1,an),day}(maxpkx{1, k}(i+1)) - keepersOnly{pORa{phe}(1,an),day}(minpkx{1, k}(i)) ...
+%                             ~= maxpkx{1, k}(i+1) - minpkx{1, k}(i)
                         continue
                     else
-                        % stride length (max - min)
                         xdist = abs( ff(k, 1, maxpkx{1,k}(i+1)) - ff(k, 1, maxpkx{1,k}(i)));
                         ydist = abs( ff(k, 2, maxpkx{1,k}(i+1)) - ff(k, 2, maxpkx{1,k}(i)));
+                        
                         strideVsVel(i,1) = sqrt( xdist^2 + ydist^2)*.51;
-                        % mean centroid velocity during that stride
                         strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i+1,1), 1));
-                        % Save weight, pheno (dummy), and animal number
                         strideVsVel(i,3) = cell2mat(weights_WT_ASD(pORa{phe}(1,an)));
                         if phe == 1 && length(pORa) == length(pORa)
                            strideVsVel(i,4) = pheno; % TscHet
@@ -145,7 +145,7 @@ for an = 1:length(pORa{1,1}(1,:))
             
             strideVelFinal = [strideVelFinal; strideVsVel];
 
-            figure(1)
+            figure(2)
             xNow = strideVsVel(:,2);
             yNow = strideVsVel(:,1);
           
@@ -153,14 +153,19 @@ for an = 1:length(pORa{1,1}(1,:))
             
             ylabel('Stride Length (mm)')
             xlabel('Speed (m/sec)')
-            ylim([0 150])
-            xlim([0 .4])
+%             ylim([0 150])
+            xlim([0 .45])
             title('Real Space (n=1)')
             hold all
         end
     end
 end
 
+clear allPaws allPaws2 an centroidsF2 colors day ff frame Fs i index k mouseInfo ...
+    numLimbs phe pheno pORa preY strideVsVel vel vid xdist xNow ydist yNow % maxpkx minpkx
+
+
+%%
 % Remove the 0 rows
 for i = 1: height(fullTbl)
     if i == height(fullTbl) + 1
@@ -174,7 +179,7 @@ end
 
 fullTbl = array2table(strideVelFinal, 'VariableNames', {'StrideLength', 'Speed', 'Weight', 'Pheno', 'Animal'});
 
-
+%%
 % x = strideVelFinal(:,2);
 % y = strideVelFinal(:,1);
 % 
