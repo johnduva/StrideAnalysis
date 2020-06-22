@@ -162,13 +162,13 @@ for an = 1:length(pORa{1,1}(1,:))
 end
 
 % Remove the 0 rows
-for i = 1: length(strideVelFinal)
-    if i == length(strideVelFinal) + 1
+for i = 1: height(fullTbl)
+    if i == height(fullTbl) + 1
         break
     end
     
-    if strideVelFinal(i,1) == 0 && strideVelFinal(i,2) == 0 
-        strideVelFinal(i,:) = [];
+    if table2array(fullTbl(i,1)) == 0 && table2array(fullTbl(i,2)) == 0 
+        fullTbl(i,:) = [];
     end
 end
 
