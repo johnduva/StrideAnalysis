@@ -1,24 +1,37 @@
 %% Plot sinusoidal timeseries of egocentric paw distance from centroid
 
-pORa = phenos; % ASD_all
-phe = 1;
+pORa = ASD_all; % phenos 
+phe = 3;
 an = 1; day = 1;
 allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 3]);
 RTfront = squeeze(allPaws(2,1,:));
 LFrear = squeeze(allPaws(2,4,:));
-
 paws = [ RTfront, LFrear ];
-clear RT LT
 
-figure(2)
+% Cross correlation between limbs
+[c, lags] = xcorr(RTfront, LFrear);
+c = c/max(c);
+[m,i] = max(c);
+t = lags(i);
+% stem(lags,c)
+
+figure(6)
+formatspace = 'Cross Correlation Lag: %d Frame(s)';
+str = sprintf(formatspace, t);
+annotation('textbox',[.58 .8 .1 .1],'string',str)
 colors={'r','b'};
 for n=1:2 
+    %   25 : 250 % C57
+    %  400 : 625 % tscHet
+    %  500 : 650 % tscHomo
+    % 1000 : 1100 % tscNeg
     plot(zscore(paws(:,n)),'color',colors{n}); 
     lgd = legend('Right Forepaw', 'Left Hindpaw', 'location', 'NorthWest');
     lgd.FontSize = 14;
-    title('C57 Paw Synchrony')
+    title('TscNeg Stride Correlation ')
     xlabel('Frame')
     ylabel('Paw Distance from Centroid')
+    ylim([-3 3])
     hold on; 
 %     [stance_pts{n}, swing_pts{n}] = peakdet(paws(:,n), 3);% if including index on x
 %     plot(stance_pts{n}(:,1),stance_pts{n}(:,2),'mo')
@@ -82,7 +95,7 @@ end
 % Extract the name of the file by day for the session, and zero pad it
 vid = sprintf('%04d',cell2mat(files_by_day(pORa{phe}(1,an),day)));
 % Load rotVal from proper file
-load(['/Users/johnduva/Desktop/C57vids/OFT-', vid, '-00_box_aligned_info.mat'], 'mouseInfo')
+load(['/Users/johnduva/Desktop/ASDvids/OFT-', vid, '-00_box_aligned_info.mat'], 'mouseInfo')
 
 % Change coordinates to real space
 allPaws2 = permute(allPaws,[2 1 3]);
@@ -105,16 +118,6 @@ end
 ff(:,1,:) = ogc1; 
 ff(:,2,:) = ogc2;
 clearvars jp2i jp2j jp3j jp3i jx jy midJoints ogc1 ogc2 tempt tempr tempCents tjp;
-
-%% Cross correlation between paws (right-fore vs hind-left)
-
-[c, lags] = xcorr(squeeze(ff(1,1,:)), squeeze(ff(4,1,:)));
-% c = c/max(c);
-
-[m,i] = max(c);
-t = lags(i);
-
-stem(lags,c)
 
 
 %% Show video of four paws in real space
