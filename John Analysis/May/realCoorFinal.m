@@ -3,13 +3,13 @@
 % (3) Pull the real space centroid locations from 'allTracks'
 
 % 0=C57, 1=TscHet...
-pheno = 1;
+pheno = 0;
 % ASD_all or phenos:
-pORa = ASD_all;
+pORa = phenos;
 Fs = 80;
 phe = 1; 
 strideVelFinal = zeros(1, 5); % don't need this since it's already created
-for an = 1:1%length(pORa{1,1}(1,:)) 
+for an = 1:length(pORa{1,1}(1,:)) 
     % length( correctedTens5(pORa{phe}(1,an),:) )
     for day = 1:1
         disp(an);
@@ -48,7 +48,7 @@ for an = 1:1%length(pORa{1,1}(1,:))
         % Extract the name of the file by day for the session, and zero pad it
         vid = sprintf('%04d',cell2mat(files_by_day(pORa{phe}(1,an),day)));
         % Load rotVal from proper file
-        load(['/Users/johnduva/Desktop/ASDvids/OFT-', vid, '-00_box_aligned_info.mat'], 'mouseInfo')
+        load(['/Users/johnduva/Desktop/C57vids/OFT-', vid, '-00_box_aligned_info.mat'], 'mouseInfo')
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Change coordinates to real space
@@ -108,15 +108,20 @@ for an = 1:1%length(pORa{1,1}(1,:))
                         % stride length (max - min)
                         xdist = abs( ff(k, 1, maxpkx{1,k}(i+1)) - ff(k, 1, maxpkx{1,k}(i)));
                         ydist = abs( ff(k, 2, maxpkx{1,k}(i+1)) - ff(k, 2, maxpkx{1,k}(i)));
-                        strideVsVel(i,1) = sqrt( xdist^2 + ydist^2)*.51;
-                        % mean centroid velocity during that stride
-                        strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i,1), 1));
-                        % Save weight, pheno (dummy), and animal number
-                        strideVsVel(i,3) = cell2mat(weights_WT_ASD(pORa{phe}(1,an)));
-                        if phe == 1 && length(pORa) == length(pORa)
-                           strideVsVel(i,4) = pheno; % TscHet
+                        
+                        if sqrt( xdist^2 + ydist^2)*.51 > 150
+                            continue
+                        else
+                            strideVsVel(i,1) = sqrt( xdist^2 + ydist^2)*.51;
+                            % mean centroid velocity during that stride
+                            strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i,1), 1));
+                            % Save weight, pheno (dummy), and animal number
+                            strideVsVel(i,3) = cell2mat(weights_WT_ASD(pORa{phe}(1,an)));
+                            if phe == 1 && length(pORa) == length(pORa)
+                               strideVsVel(i,4) = pheno; % TscHet
+                            end
+                            strideVsVel(i,5) = pORa{phe}(1,an);
                         end
-                        strideVsVel(i,5) = pORa{phe}(1,an);
                     end
                 end
                 
@@ -132,13 +137,18 @@ for an = 1:1%length(pORa{1,1}(1,:))
                         xdist = abs( ff(k, 1, maxpkx{1,k}(i+1)) - ff(k, 1, maxpkx{1,k}(i)));
                         ydist = abs( ff(k, 2, maxpkx{1,k}(i+1)) - ff(k, 2, maxpkx{1,k}(i)));
                         
-                        strideVsVel(i,1) = sqrt( xdist^2 + ydist^2)*.51;
-                        strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i+1,1), 1));
-                        strideVsVel(i,3) = cell2mat(weights_WT_ASD(pORa{phe}(1,an)));
-                        if phe == 1 && length(pORa) == length(pORa)
-                           strideVsVel(i,4) = pheno; % TscHet
+                        
+                        if sqrt( xdist^2 + ydist^2)*.51 > 150
+                            continue
+                        else
+                            strideVsVel(i,1) = sqrt( xdist^2 + ydist^2)*.51;
+                            strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i+1,1), 1));
+                            strideVsVel(i,3) = cell2mat(weights_WT_ASD(pORa{phe}(1,an)));
+                            if phe == 1 && length(pORa) == length(pORa)
+                               strideVsVel(i,4) = pheno; % TscHet
+                            end
+                            strideVsVel(i,5) = pORa{phe}(1,an);
                         end
-                        strideVsVel(i,5) = pORa{phe}(1,an);
                     end
                 end
             end
@@ -164,20 +174,21 @@ end
 clear allPaws allPaws2 an centroidsF2 colors day ff frame Fs i index k mouseInfo ...
     numLimbs phe pheno pORa preY strideVsVel vid xdist xNow ydist yNow % maxpkx minpkx vel
 
+fullTbl3 = array2table(strideVelFinal, 'VariableNames', {'StrideLength', 'Speed', 'Weight', 'Pheno', 'Animal'});
 
 %%
 % Remove the 0 rows
-for i = 1: height(fullTbl)
-    if i == height(fullTbl) + 1
-        break
-    end
+for i = 1: height(fullTbl3)
+%     if i == height(fullTbl) + 1
+%         break
+%     end
     
-    if table2array(fullTbl(i,1)) == 0 && table2array(fullTbl(i,2)) == 0 
-        fullTbl(i,:) = [];
+    if table2array(fullTbl3(i,1)) == 0 
+        fullTbl3(i,:) = [];
     end
 end
 
-fullTbl = array2table(strideVelFinal, 'VariableNames', {'StrideLength', 'Speed', 'Weight', 'Pheno', 'Animal'});
+
 
 %%
 % x = strideVelFinal(:,2);

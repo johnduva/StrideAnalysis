@@ -1,7 +1,8 @@
 %% Plot sinusoidal timeseries of egocentric paw distance from centroid
 
-pORa = ASD_all; % phenos 
-phe = 3;
+% ASD_all or phenos
+pORa = phenos ; 
+phe = 1;
 an = 1; day = 1;
 allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 3]);
 RTfront = squeeze(allPaws(2,1,:));
@@ -9,29 +10,30 @@ LFrear = squeeze(allPaws(2,4,:));
 paws = [ RTfront, LFrear ];
 
 % Cross correlation between limbs
-[c, lags] = xcorr(RTfront, LFrear);
-c = c/max(c);
-[m,i] = max(c);
-t = lags(i);
+% [c, lags] = xcorr(RTfront, LFrear);
+% c = c/max(c);
+% [m,i] = max(c);
+% t = lags(i);
 % stem(lags,c)
 
 figure(6)
-formatspace = 'Cross Correlation Lag: %d Frame(s)';
-str = sprintf(formatspace, t);
-annotation('textbox',[.58 .8 .1 .1],'string',str)
+% formatspace = 'Cross Correlation Lag: %d Frame(s)';
+% str = sprintf(formatspace, t);
+% annotation('textbox',[.58 .8 .1 .1],'string',str)
 colors={'r','b'};
 for n=1:2 
     %   25 : 250 % C57
     %  400 : 625 % tscHet
     %  500 : 650 % tscHomo
     % 1000 : 1100 % tscNeg
-    plot(zscore(paws(:,n)),'color',colors{n}); 
+    plot(paws(:,n),'color',colors{n}); 
+%     plot(zscore(paws(:,n)),'color',colors{n}); 
     lgd = legend('Right Forepaw', 'Left Hindpaw', 'location', 'NorthWest');
     lgd.FontSize = 14;
     title('TscNeg Stride Correlation ')
     xlabel('Frame')
     ylabel('Paw Distance from Centroid')
-    ylim([-3 3])
+%     ylim([-3 3])
     hold on; 
 %     [stance_pts{n}, swing_pts{n}] = peakdet(paws(:,n), 3);% if including index on x
 %     plot(stance_pts{n}(:,1),stance_pts{n}(:,2),'mo')
