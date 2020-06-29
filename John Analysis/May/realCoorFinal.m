@@ -2,13 +2,18 @@
 % (2) Use custom peakdet() in 'John Analysis' to extract max and min peaks from egocentric 'preY'
 % (3) Pull the real space centroid locations from 'allTracks'
 
-% 0=C57, 1=TscHet...
-pheno = 0;
-% ASD_all or phenos:
-pORa = phenos;
+% ASD_all, phenos, or Cntnap2_all
+pORa = Cntnap2_all;
 Fs = 80;
+% Het(1), Homo(2), or Neg(3)
 phe = 1; 
-strideVelFinal = zeros(1, 5); % don't need this since it's already created
+phenos = [convertCharsToStrings('C57'), convertCharsToStrings('TscHet'), ...
+    convertCharsToStrings('TscHomo'), convertCharsToStrings('TscNeg'), ...
+    convertCharsToStrings('Cntnap2Het'), convertCharsToStrings('Cntnap2Homo'), ...
+    convertCharsToStrings('Cntnap2Neg') ];
+pheno = phenos(phe);
+
+strideVelFinal = zeros(1, 5); 
 for an = 1:length(pORa{1,1}(1,:)) 
     % length( correctedTens5(pORa{phe}(1,an),:) )
     for day = 1:1

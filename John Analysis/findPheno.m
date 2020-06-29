@@ -18,13 +18,13 @@ end
 %% Create array of animal IDs that belong to desired phenotype
 
 % get all of the sessions for [vehicle] animals...
-Cntnap2_Het = [];
+Cntnap2_Homo = [];
 index = 1;
 for an = 1:size(group_by_day,1)
     for day = 1:size(group_by_day,2)
         % if animal is a 'xxx'...
-        if strcmp( group_by_day{an,day},'Cntnap2') && strcmp(zygosity{an,day},'heterozygote') && ~ismember(an,Cntnap2_Het)
-            Cntnap2_Het(index) = an;
+        if strcmp( group_by_day{an,day},'Cntnap2') && strcmp(zygosity{an,day},'homozygote') && ~ismember(an,Cntnap2_Homo)
+            Cntnap2_Homo(index) = an;
             index = index + 1;
         end
     end

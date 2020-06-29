@@ -13,5 +13,5 @@ load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/weights.m
 load('/Users/johnduva/Git/StrideAnalysis/John Analysis/phenosAll.mat')
 load('/Users/johnduva/Git/StrideAnalysis/John Analysis/ASD_all.mat') 
 
-load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/group_by_day.mat');
-load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/zygosity.mat');
+load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/group_by_day.mat'); % phenotype
+load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/zygosity.mat'); % zygosity
