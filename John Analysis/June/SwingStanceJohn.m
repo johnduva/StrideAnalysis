@@ -1,7 +1,7 @@
 %% Plot sinusoidal timeseries of egocentric paw distance from centroid
 
 % ASD_all, phenos, or Cntnap2_all
-pORa = Cntnap2_all; 
+pORa = ASD_all; 
 % Het(1), Homo(2), or Neg(3)
 phe = 1;
 % Make sure using correct phenotype
@@ -13,12 +13,14 @@ allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 
 % LFrear = squeeze(allPaws(2,4,:));
 % paws = [ RTfront, LFrear ];
 
-RTfront = squeeze(allPaws(2,2,:));
-LFrear = squeeze(allPaws(2,3,:));
-paws = [ RTfront, LFrear ];
+LFfront = squeeze(allPaws(2,2,:));
+RTrear = squeeze(allPaws(2,3,:));
+paws = [ LFfront, RTrear ];
 
 % Cross correlation between limbs
-[c, lags] = xcorr(paws(1:1000,1), paws(1:1000,2));
+slot = (1:14206);
+% slot = (2810:3000);
+[c, lags] = xcorr(paws(slot,1), paws(slot,2));
 c = c/max(c);
 [m,i] = max(c);
 t = lags(i);
@@ -32,21 +34,21 @@ vx = gradient(centroidsF2(:,1));
 vy = gradient(centroidsF2(:,2));
 % velocity :
 vel = ((sqrt(vx.^2 + vy.^2)));
-clear vx vy;
 vel = fillmissing(vel,'linear');
 vel = movmedian(vel,Fs/2);
 % from pixels per frame to 
 %          mm per second
-vel = vel * 80 * .51 / 1000;
+velTscHet = vel * 80 * .51 / 1000;
+clear vel vx vy
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-figure(6)
+figure(7)
 label1 = 'Cross Correlation Lag: %d Frame(s)';
 str = sprintf(label1, t);
 annotation('textbox',[.58 .8 .1 .1],'string',str)
 colors={'r','b'};
 for n=1:2 
-    plot(zscore(paws(:,n)),'color',colors{n}); 
+    plot(zscore(paws(slot,n)),'color',colors{n}); 
     %     plot(paws(:,n),'color',colors{n}); 
     lgd = legend('Right Forepaw', 'Left Hindpaw', 'location', 'NorthWest');
     lgd.FontSize = 14;
@@ -59,7 +61,7 @@ for n=1:2
 %     plot(stance_pts{n}(:,1),stance_pts{n}(:,2),'mo')
 %     plot(swing_pts{n}(:,1),swing_pts{n}(:,2),'gs'); hold on;
 end
-plot(vel*10)
+plot(vel(slot)*10)
 
 
 %% Prepare data of particular animal to create video
@@ -112,16 +114,12 @@ clearvars jp2i jp2j jp3j jp3i jx jy midJoints ogc1 ogc2 tempt tempr tempCents tj
 
 
 %% Show video of four paws in real space
-v = VideoWriter('cntnapHetSlow.mp4', 'MPEG-4');
+v = VideoWriter('tscHetHIGH.mp4', 'MPEG-4');
 v.FrameRate = 10;
 open(v);
-
+slot = 1:velTscHet_HIGH(:,1);
 % Generate a set of frames, get the frame from the figure, and then write each frame to the file.
-% for k = 25 : 250 % C57
-% for k = 400 : 625 % tscHet
-% for k = 500 : 650 % tscHomo
-% for k = 1000 : 1100 % tscNeg
-for k = 8750 : 8950 % tscHet
+for k = slot
     h1 = scatter(ff(1,1,k), ff(1,2,k), 'r'); % this is 5
     hold on;
     h2 = scatter(ff(2,1,k), ff(2,2,k), 'b'); % this is 6
