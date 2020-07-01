@@ -1,22 +1,35 @@
+%% Generate matrix 'strideVelFinal' with the following columns per row:
+%   - Stride Length
+%   - Animal Speed (during stride)
+%   - Weight
+%   - Phenotype
+%   - Animal ID Number
+
+% Steps:
 % (1) Loop through each animal, each day and extract egocentric coordinates from correctedTens5 for four paws 
 % (2) Use custom peakdet() in 'John Analysis' to extract max and min peaks from egocentric 'preY'
 % (3) Pull the real space centroid locations from 'allTracks'
 
-% ASD_all, phenos, or Cntnap2_all
-pORa = Cntnap2_all;
 Fs = 80;
-% Het(1), Homo(2), or Neg(3)
-phe = 1; 
-phenos = [convertCharsToStrings('C57'), convertCharsToStrings('TscHet'), ...
+phenotypes = [convertCharsToStrings('C57'), convertCharsToStrings('TscHet'), ...
     convertCharsToStrings('TscHomo'), convertCharsToStrings('TscNeg'), ...
     convertCharsToStrings('Cntnap2Het'), convertCharsToStrings('Cntnap2Homo'), ...
     convertCharsToStrings('Cntnap2Neg') ];
-pheno = phenos(phe);
 
+%% ASD_all, phenos, or Cntnap2_all
+pORa = Cntnap2_all;
+% Het(1), Homo(2), or Neg(3)
+phe = 1;
+% Make sure using correct phenotype
+disp(length(pORa{1,phe}(1,:)))
+   
+%%
+% The 'Pheno' column will be the corresponding string within list 'phenotypes'  
+pheno = phenotypes(phe);
+% Create a sekeleton for the output matrix:
 strideVelFinal = zeros(1, 5); 
-for an = 1:length(pORa{1,1}(1,:)) 
-    % length( correctedTens5(pORa{phe}(1,an),:) )
-    for day = 1:1
+for an = 1:length(pORa{1,phe}(1,:)) 
+    for day = 1:1  %length( correctedTens5(pORa{phe}(1,an),:) )
         disp(an);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % (1) Get session's four paw locations from 'correctedTens5' and isolate the y-vals into four vectors of 'preY'
