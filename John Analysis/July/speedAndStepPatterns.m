@@ -1,3 +1,17 @@
+% Get change in x-coordinate per frame (negative just means a change to the left):
+vx = gradient(centroidsF2(:,1));
+% Get the change in y-coordinate per frame:
+vy = gradient(centroidsF2(:,2));
+% velocity :
+vel = ((sqrt(vx.^2 + vy.^2)));
+vel = fillmissing(vel,'linear');
+vel = movmedian(vel,Fs/2);
+% from pixels per frame to 
+%          mm per second
+velTscHet = vel * 80 * .51 / 1000;
+clear vel vx vy
+
+
 
 velTscHet_HIGH = [];
 velTscHet_MED = [];

@@ -1,25 +1,23 @@
 %% Plot sinusoidal timeseries of egocentric paw distance from centroid
 
 % ASD_all, phenos, or Cntnap2_all
-pORa = ASD_all; 
+pORa = Cntnap2_all; 
 % Het(1), Homo(2), or Neg(3)
-phe = 1;
+phe = 3;
 % Make sure using correct phenotype
 disp(length(pORa{1,phe}(1,:)))
 
-an = 1; day = 1;
+an = 3; day = 1; 
 allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 3]);
 % RTfront = squeeze(allPaws(2,1,:));
 % LFrear = squeeze(allPaws(2,4,:));
 % paws = [ RTfront, LFrear ];
-
 LFfront = squeeze(allPaws(2,2,:));
 RTrear = squeeze(allPaws(2,3,:));
 paws = [ LFfront, RTrear ];
 
 % Cross correlation between limbs
-slot = (1:14206);
-% slot = (2810:3000);
+slot = (1:length(paws));
 [c, lags] = xcorr(paws(slot,1), paws(slot,2));
 c = c/max(c);
 [m,i] = max(c);
@@ -47,6 +45,9 @@ label1 = 'Cross Correlation Lag: %d Frame(s)';
 str = sprintf(label1, t);
 annotation('textbox',[.58 .8 .1 .1],'string',str)
 colors={'r','b'};
+% Plot speed
+plot(vel(slot)*10)
+% Plot paw 
 for n=1:2 
     plot(zscore(paws(slot,n)),'color',colors{n}); 
     %     plot(paws(:,n),'color',colors{n}); 
@@ -61,7 +62,7 @@ for n=1:2
 %     plot(stance_pts{n}(:,1),stance_pts{n}(:,2),'mo')
 %     plot(swing_pts{n}(:,1),swing_pts{n}(:,2),'gs'); hold on;
 end
-plot(vel(slot)*10)
+
 
 
 %% Prepare data of particular animal to create video
@@ -76,7 +77,7 @@ disp(length(pORa{1,phe}(1,:)))
 an = 1; day = 1;
 allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 3]);
 
- index = 1;
+index = 1;
 for frame = 1: length(allTracks{pORa{phe}(1,an),day})
     if ismember(frame, keepersOnly{pORa{phe}(1,an),day}) % && frame == blank + 1
         centroidsF2(index,1) = allTracks{pORa{phe}(1,an),day}(frame,1); 
