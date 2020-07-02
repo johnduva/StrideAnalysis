@@ -26,6 +26,14 @@ t = lags(i);
 % stem(lags,c)
 
 %%%%%%%%%%%%%%%%%% Calculate animal speed %%%%%%%%%%%%%%%%%%
+index = 1;
+for frame = 1: length(allTracks{pORa{phe}(1,an),day})
+    if ismember(frame, keepersOnly{pORa{phe}(1,an),day}) % && frame == blank + 1
+        centroidsF2(index,1) = allTracks{pORa{phe}(1,an),day}(frame,1); 
+        centroidsF2(index,2) = allTracks{pORa{phe}(1,an),day}(frame,2);
+        index = index + 1;
+    end
+end
 % Get change in x-coordinate per frame (negative just means a change to the left):
 vx = gradient(centroidsF2(:,1));
 % Get the change in y-coordinate per frame:
@@ -115,12 +123,12 @@ clearvars jp2i jp2j jp3j jp3i jx jy midJoints ogc1 ogc2 tempt tempr tempCents tj
 
 
 %% Show video of four paws in real space
-v = VideoWriter('tscHetHIGH.mp4', 'MPEG-4');
+v = VideoWriter('cntnapHet.mp4', 'MPEG-4');
 v.FrameRate = 10;
 open(v);
-slot = 1:velTscHet_HIGH(:,1);
+% slot = 1:velTscHet_HIGH(:,1);
 % Generate a set of frames, get the frame from the figure, and then write each frame to the file.
-for k = slot
+for k = 2500 : 2640
     h1 = scatter(ff(1,1,k), ff(1,2,k), 'r'); % this is 5
     hold on;
     h2 = scatter(ff(2,1,k), ff(2,2,k), 'b'); % this is 6
@@ -130,6 +138,7 @@ for k = slot
     h4 = scatter(ff(4,1,k), ff(4,2,k), 'r'); % this is 10
     
 %     legend('Hindpaws','Forepaws', 'Location','NorthWest')
+    title('Cntnap Het')
     xlim([0 1000])
     ylim([0 1200])
     frame = getframe(gcf);
