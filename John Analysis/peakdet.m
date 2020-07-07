@@ -1,4 +1,3 @@
-% JOHN'S EDIT
 function [maxtab, mintab]=peakdet(v, delta, x)
 %PEAKDET Detect peaks in a vector
 %        [MAXTAB, MINTAB] = PEAKDET(V, DELTA) finds the local
@@ -46,24 +45,20 @@ lookformax = 1;
 
 for i=1:length(v)
     this = v(i);
-    if i < mnpos+delta || i < mxpos+delta
-        continue
+    if this > mx, mx = this; mxpos = x(i); end
+    if this < mn, mn = this; mnpos = x(i); end
+    
+    if lookformax
+        if this < mx-delta
+            maxtab = [maxtab ; mxpos mx];
+            mn = this; mnpos = x(i);
+            lookformax = 0;
+        end
     else
-        if this > mx, mx = this; mxpos = x(i); end
-        if this < mn, mn = this; mnpos = x(i); end
-
-        if lookformax
-            if (this < mx-delta) %&& (i > mnpos+delta)
-                maxtab = [maxtab ; mxpos mx];
-                mn = this; mnpos = x(i);
-                lookformax = 0;
-            end
-        else
-            if (this > mn+delta) %&& (i > mxpos+delta)
-                mintab = [mintab ; mnpos mn];
-                mx = this; mxpos = x(i);
-                lookformax = 1;
-            end
+        if this > mn+delta
+            mintab = [mintab ; mnpos mn];
+            mx = this; mxpos = x(i);
+            lookformax = 1;
         end
     end
 end
