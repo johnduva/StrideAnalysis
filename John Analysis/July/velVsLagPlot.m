@@ -47,40 +47,37 @@ vel = vel * 80 * .51 / 1000;
 
 % Create skeleton: each row will contain a lag and a speed to create a scatterplot
 strides = nan(1,1);
-for k = 1 : min( [length(maxpkx{1,2}); length(maxpkx{1,1})]  )-1
+count = 1;
+for k = 1 : 5: min( [length(maxpkx{1,2}); length(maxpkx{1,1})]  )-1
+   
     % Forepaw vector of normalized distances from TTI from one max to the next
-    v1 = paws(maxpkx{1,1}(k,1) : maxpkx{1,1}(k+1,1) ,1);
+    v1 = paws(maxpkx{1,1}(k,1) : maxpkx{1,1}(k+5,1) ,1);
     % Hind paw vector of normalized distances from TTI from one max to the next
-%     v2 = paws(maxpkx{1,2}(k,1) : maxpkx{1,2}(k+1,1) ,2);
-    v2 = paws(maxpkx{1,1}(k,1) : maxpkx{1,1}(k+1,1) ,2);
+    v2 = paws(maxpkx{1,1}(k,1) : maxpkx{1,1}(k+5,1) ,2);
 
     % Use 'xcorr' function to get the lag for each iteration (stride)
-    [c, lags]  = xcorr(v1, v2);
-    % Normalize
-    c = abs(c)/max(c);
+    [c, lags]  = xcorr(v1, v2, 'normalized');
     % Get the max value and its index:
     [~,i] = max(c);
-    t = lags(i);
-    
-    
-    
-    
+    t = i-length(v1);
+   
+    velocity = mean(  vel(maxpkx{1,1}(k,1):maxpkx{1,1}(k+5,1))  );
     
     % Add lag and speed to a new row in 'strides'
-    strides(k,1) = t;
-%     strides(k,2) = speed;
+    strides(count,1) = t;
+    strides(count,2) = velocity;
+    count = count + 1;
 end
 
+% Remove outliers
+if strides(:,1) > 10 || strides(:,1) < -10 
+
 % Plot current stride
-figure(3)
-plot(v1); hold on; plot(v2)
+% figure(4)
+% plot(v1); hold on; plot(v2)
 
-
-% Plot stride with 3 frame shift
-figure(1)
-plot((1:length(v1))+3, v1); hold on; plot(v2)
-
-
+% Plot avg speed versus lag
+scatter(strides(:,2), strides(:,1) )
 
 %%
 figure(2)
