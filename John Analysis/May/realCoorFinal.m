@@ -212,7 +212,6 @@ end
 % x = strideVelFinal(:,2);
 % y = strideVelFinal(:,1);
 % 
-% 
 % % Use polynomial fit
 % [p, S] = polyfit(xNow,yNow,3);
 % x5 = linspace(.1,.55);
@@ -221,6 +220,6 @@ end
 % plot(x5,y_fit+2*delta,'b--', x5, y_fit-2*delta,'b--','LineWidth',2)
 % r_sqr = power(corr2(y_fit,x5),2);
 % 
-% % include r on plot
+% % Include r on plot
 % str = sprintf( 'r= %1.2f', r_sqr);
 % annotation('textbox', [0.8, 0.8, 0.1, 0.1], 'String', str)
