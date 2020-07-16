@@ -2,7 +2,7 @@
 clearvars -except allTracks ASD_all phenos correctedTens5 keepersOnly z
 
 % phenos, ASD_all, or Cntnap2_all
-pORa = phenos;
+pORa = ASD_all;
 % Het(1), Homo(2), or Neg(3)
 phe = 1; 
 day = 1; 
@@ -10,6 +10,7 @@ disp(length(pORa{1,phe}(1,:)));
 permaList = nan(1,2);
 
 for an = 1 : length(pORa{1,phe}(1,:)) 
+    disp(an);
     allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 3]);
     paws = [ zscore(squeeze(allPaws(2,2,:))), zscore(squeeze(allPaws(2,3,:))) ];
 
@@ -77,9 +78,10 @@ for an = 1 : length(pORa{1,phe}(1,:))
     
 end
 permaList(1,:) = [];
+save('permaList_C57.mat', 'permaList')
 
 %% Create table and linear model
-stridesTbl = array2table(strides2);
+stridesTbl = array2table(permaList);
 stridesTbl.Properties.VariableNames(1) = {'Speed'};
 stridesTbl.Properties.VariableNames(2) = {'Lag'};
 mdl = fitlm(stridesTbl);
@@ -89,7 +91,7 @@ z = z+1;
 figure(z)
 scatter(strides2(:,1), strides2(:,2), 10 )
 plot(mdl)
-title('TscHet Velocity vs Lag (n=1)')
+title('C57 Velocity vs Lag (n=60)')
 xlabel('Velocity')
 ylabel('Lag')
 ylim([-12 1])
