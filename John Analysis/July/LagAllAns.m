@@ -1,11 +1,11 @@
 %% Create plot of avg velocity vs. xcorr lag per stride phase
-clearvars -except allTracks ASD_all phenos correctedTens5 keepersOnly z
+clearvars -except allTracks ASD_all phenos correctedTens5 keepersOnly z Cntnap2_all 
 
 % phenos, ASD_all, or Cntnap2_all
-pORa = ASD_all;
+pORa = phenos;
 % Het(1), Homo(2), or Neg(3)
-phe = 1; 
-day = 1; 
+phe = 4;
+day = 1;
 disp(length(pORa{1,phe}(1,:)));
 permaList = nan(1,2);
 
@@ -69,16 +69,13 @@ for an = 1 : length(pORa{1,phe}(1,:))
         temp_strides(count,2) = t;
         count = count + 1;
     end
-
-    % Remove outliers
-    strides2 = rmoutliers(temp_strides);
-
+    
     % Add strides from this animal to the permanent list
-    permaList = [permaList; strides2];
+    permaList = [permaList; rmoutliers(temp_strides);];
     
 end
 permaList(1,:) = [];
-save('permaList_C57.mat', 'permaList')
+% save('permaList_C57.mat', 'permaList')
 
 %% Create table and linear model
 stridesTbl = array2table(permaList);
@@ -89,9 +86,9 @@ mdl = fitlm(stridesTbl);
 %% Plot avg speed versus lag
 z = z+1;
 figure(z)
-scatter(strides2(:,1), strides2(:,2), 10 )
+scatter(permaList(:,1), permaList(:,2), 10 )
 plot(mdl)
-title('C57 Velocity vs Lag (n=60)')
+title('CrusI_RT2D Velocity vs Lag (n=19)')
 xlabel('Velocity')
 ylabel('Lag')
 ylim([-12 1])
@@ -99,18 +96,18 @@ xlim([0 .35])
 legend('off')
 
 % Include r on plot
-r = corrcoef(strides2(:,1), strides2(:,2));
+r = corrcoef(permaList(:,1), permaList(:,2));
 r = r(1,2);
 str = sprintf( 'r= %1.2f', r);
 annotation('textbox', [0.8, 0.8, 0.1, 0.1], 'String', str)
 
 % Include mean lag on plot
-meanLag = mean(strides2(:,2));
+meanLag = mean(permaList(:,2));
 str2 = sprintf( 'avg lag = %1.2f', meanLag);
 annotation('textbox', [0.15, 0.8, 0.1, 0.1], 'String', str2)
 
 % Include mean speed on plot
-meanSpeed = mean(strides2(:,1));
+meanSpeed = mean(permaList(:,1));
 str3 = sprintf( 'avg vel = %1.2f', meanSpeed);
 annotation('textbox', [0.7, 0.15, 0.2, 0.05], 'String', str3)
 
