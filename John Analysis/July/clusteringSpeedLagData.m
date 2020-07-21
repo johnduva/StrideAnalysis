@@ -29,3 +29,5 @@ title 'Cluster Assignments and Centroids'
 % ylim([-2.5 0])
 hold off
 
+%delete later
+
