@@ -4,8 +4,8 @@ clearvars -except allTracks ASD_all phenos correctedTens5 keepersOnly z
 % phenos, ASD_all, or Cntnap2_all
 pORa = ASD_all; 
 % Het(1), Homo(2), or Neg(3)
-phe = 1;
-disp(length(pORa{1,phe}(1,:)));
+phe = 2;
+fprintf('%d animals in current phenotype.\n', length(pORa{1,phe}(1,:)));
 
 an = 1; day = 1; 
 allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 3]);

@@ -1,12 +1,12 @@
 %% Create plot of avg velocity vs. xcorr lag per stride phase
-clearvars -except allTracks ASD_all phenos correctedTens5 keepersOnly z Cntnap2_all 
+clearvars -except allTracks correctedTens5 keepersOnly z Cntnap2_all ASD_all phenos 
 
 % phenos, ASD_all, or Cntnap2_all
-pORa = phenos;
+pORa = ASD_all;
 % Het(1), Homo(2), or Neg(3)
-phe = 4;
+phe = 1;
 day = 1;
-disp(length(pORa{1,phe}(1,:)));
+fprintf('%d animals in current phenotype:\n', length(pORa{1,phe}(1,:)));
 permaList = nan(1,2);
 
 for an = 1 : length(pORa{1,phe}(1,:)) 
@@ -64,9 +64,13 @@ for an = 1 : length(pORa{1,phe}(1,:))
 
         velocity = mean(  vel(maxpkx{1,1}(k,1):maxpkx{1,1}(k+5,1))  );
 
+        
+        numFrames = maxpkx{1,1}(k+5,1) - maxpkx{1,1}(k,1);
+        radians = 2*pi*5/numFrames;
+        
         % Add lag and speed to a new row in 'strides'
         temp_strides(count,1) = velocity;
-        temp_strides(count,2) = t;
+        temp_strides(count,2) = t*radians;
         count = count + 1;
     end
     
@@ -77,7 +81,7 @@ end
 permaList(1,:) = [];
 % save('permaList_C57.mat', 'permaList')
 
-%% Create table and linear model
+% Create table and linear model
 stridesTbl = array2table(permaList);
 stridesTbl.Properties.VariableNames(1) = {'Speed'};
 stridesTbl.Properties.VariableNames(2) = {'Lag'};
@@ -88,10 +92,10 @@ z = z+1;
 figure(z)
 scatter(permaList(:,1), permaList(:,2), 10 )
 plot(mdl)
-title('CrusI_RT2D Velocity vs Lag (n=19)')
-xlabel('Velocity')
-ylabel('Lag')
-ylim([-12 1])
+title('TscHomo Velocity vs Lag (n=9)')
+xlabel('Velocity (m/s)')
+ylabel('Lag (radians)')
+ylim([-3 0])
 xlim([0 .35])
 legend('off')
 
@@ -111,8 +115,20 @@ meanSpeed = mean(permaList(:,1));
 str3 = sprintf( 'avg vel = %1.2f', meanSpeed);
 annotation('textbox', [0.7, 0.15, 0.2, 0.05], 'String', str3)
 
+% saveas(gcf, )
+
 %% Plot entire series with maximums indicated on figure
 figure(2)
 findpeaks(paws(1:1000,1),'MinPeakDistance', 11)
 hold on
 findpeaks(paws(1:1000,2),'MinPeakDistance', 11)
+
+%% Density plots
+% for temp = 1: length(permaList)
+%     if permaList(temp,2) == 0
+%         permaList(temp,1) = 0;
+%     end
+% end
+% 
+% permaList(:,2)), nonzeros(permaList(:,1))
+
