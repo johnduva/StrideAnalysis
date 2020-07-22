@@ -7,7 +7,7 @@ pORa = ASD_all;
 phe = 1;
 day = 1;
 fprintf('%d animals in current phenotype:\n', length(pORa{1,phe}(1,:)));
-permaList = nan(1,2);
+permaList = nan(1,4);
 
 for an = 1 : length(pORa{1,phe}(1,:)) 
     disp(an);
@@ -47,7 +47,7 @@ for an = 1 : length(pORa{1,phe}(1,:))
 
 
     % Create skeleton: each row will contain a lag and a speed to create a scatterplot
-    temp_strides = nan(1,2);
+    temp_strides = nan(1,4);
     count = 1;
     for k = 1 : 5: min( [length(maxpkx{1,2}); length(maxpkx{1,1})]  )-5
 
@@ -55,7 +55,9 @@ for an = 1 : length(pORa{1,phe}(1,:))
         v1 = paws(maxpkx{1,1}(k,1) : maxpkx{1,1}(k+5,1) ,1);
         % Hind paw vector of normalized distances from TTI from one max to the next
         v2 = paws(maxpkx{1,1}(k,1) : maxpkx{1,1}(k+5,1) ,2);
-
+        start = maxpkx{1,1}(k,1);
+        finish = maxpkx{1,1}(k+5,1);
+        
         % Use 'xcorr' function to get the lag for each iteration (stride)
         [c, lags]  = xcorr(v1, v2, 'normalized');
         % Get the max value and its index:
@@ -64,13 +66,13 @@ for an = 1 : length(pORa{1,phe}(1,:))
 
         velocity = mean(  vel(maxpkx{1,1}(k,1):maxpkx{1,1}(k+5,1))  );
 
-        
         numFrames = maxpkx{1,1}(k+5,1) - maxpkx{1,1}(k,1);
         radians = 2*pi*5/numFrames;
         
         % Add lag and speed to a new row in 'strides'
         temp_strides(count,1) = velocity;
         temp_strides(count,2) = t*radians;
+        
         count = count + 1;
     end
     
@@ -79,20 +81,20 @@ for an = 1 : length(pORa{1,phe}(1,:))
     
 end
 permaList(1,:) = [];
-% save('permaList_C57.mat', 'permaList')
+save('permaList_tscHet.mat', 'permaList')
 
 % Create table and linear model
 stridesTbl = array2table(permaList);
 stridesTbl.Properties.VariableNames(1) = {'Speed'};
 stridesTbl.Properties.VariableNames(2) = {'Lag'};
-mdl = fitlm(stridesTbl);
+mdl = fitlm(stridesTbl(:,1:2));
 
 %% Plot avg speed versus lag
 z = z+1;
 figure(z)
 scatter(permaList(:,1), permaList(:,2), 10 )
 plot(mdl)
-title('TscHomo Velocity vs Lag (n=9)')
+title('TscHet Velocity vs Lag (n=9)')
 xlabel('Velocity (m/s)')
 ylabel('Lag (radians)')
 ylim([-3 0])
