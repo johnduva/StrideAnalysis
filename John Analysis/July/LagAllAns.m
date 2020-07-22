@@ -1,5 +1,5 @@
 %% Create plot of avg velocity vs. xcorr lag per stride phase
-clearvars -except allTracks correctedTens5 keepersOnly z Cntnap2_all ASD_all phenos 
+clearvars -except allTracks correctedTens5 keepersOnly z Cntnap2_all ASD_all phenos permaList
 
 % phenos, ASD_all, or Cntnap2_all
 pORa = ASD_all;
@@ -7,7 +7,7 @@ pORa = ASD_all;
 phe = 1;
 day = 1;
 fprintf('%d animals in current phenotype:\n', length(pORa{1,phe}(1,:)));
-permaList = nan(1,4);
+permaList = nan(1,5);
 
 for an = 1 : length(pORa{1,phe}(1,:)) 
     disp(an);
@@ -72,6 +72,9 @@ for an = 1 : length(pORa{1,phe}(1,:))
         % Add lag and speed to a new row in 'strides'
         temp_strides(count,1) = velocity;
         temp_strides(count,2) = t*radians;
+        temp_strides(count,3) = start;
+        temp_strides(count,4) = finish;
+        temp_strides(count,5) = an;
         
         count = count + 1;
     end
@@ -83,18 +86,11 @@ end
 permaList(1,:) = [];
 save('permaList_tscHet.mat', 'permaList')
 
-% Create table and linear model
-stridesTbl = array2table(permaList);
-stridesTbl.Properties.VariableNames(1) = {'Speed'};
-stridesTbl.Properties.VariableNames(2) = {'Lag'};
-mdl = fitlm(stridesTbl(:,1:2));
-
 %% Plot avg speed versus lag
 z = z+1;
 figure(z)
 scatter(permaList(:,1), permaList(:,2), 10 )
-plot(mdl)
-title('TscHet Velocity vs Lag (n=9)')
+title('TscHet Velocity vs Lag (n=17)')
 xlabel('Velocity (m/s)')
 ylabel('Lag (radians)')
 ylim([-3 0])
@@ -102,10 +98,10 @@ xlim([0 .35])
 legend('off')
 
 % Include r on plot
-r = corrcoef(permaList(:,1), permaList(:,2));
-r = r(1,2);
-str = sprintf( 'r= %1.2f', r);
-annotation('textbox', [0.8, 0.8, 0.1, 0.1], 'String', str)
+% r = corrcoef(permaList(:,1), permaList(:,2));
+% r = r(1,2);
+% str = sprintf( 'r= %1.2f', r);
+% annotation('textbox', [0.8, 0.8, 0.1, 0.1], 'String', str)
 
 % Include mean lag on plot
 meanLag = mean(permaList(:,2));
