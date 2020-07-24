@@ -36,16 +36,16 @@ hold off
 %% Loop through each bout in permaList and play the videos of the bouts assigned to the cluster
 
 %  Load relevant files
-load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/correctedTens5.mat');
-load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/allTracks.mat');
-load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/keepersOnly.mat');
-load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/filenames.mat') % files_by_day.mat
-load('/Users/johnduva/Git/StrideAnalysis/John Analysis/Mat Files/phenosAll.mat')  % phenos
-load('/Users/johnduva/Git/StrideAnalysis/John Analysis/Mat Files/ASD_all.mat') 
-load('/Users/johnduva/Git/StrideAnalysis/John Analysis/Mat Files/Cntnap2_all.mat')
+% load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/correctedTens5.mat');
+% load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/allTracks.mat');
+% load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/keepersOnly.mat');
+% load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/filenames.mat') % files_by_day.mat
+% load('/Users/johnduva/Git/StrideAnalysis/John Analysis/Mat Files/phenosAll.mat')  % phenos
+% load('/Users/johnduva/Git/StrideAnalysis/John Analysis/Mat Files/ASD_all.mat') 
+% load('/Users/johnduva/Git/StrideAnalysis/John Analysis/Mat Files/Cntnap2_all.mat')
 
 % Which gait/cluster do we want to aggregate movies of? 
-cluster = 3;
+cluster = 2;
 
 % For each bout in permaList, identify if in current cluster; if so, create movie
 for bout = 1:length(permaList)
@@ -97,9 +97,11 @@ for bout = 1:length(permaList)
         clearvars jp2i jp2j jp3j jp3i jx jy midJoints ogc1 ogc2 tempt tempr tempCents tjp;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        %% Show video of four paws in real space
+        % Show video of four paws in real space
         boutNum = sprintf('%04d',bout);
-        v = VideoWriter(['tscHet_Gait3_', boutNum, '.mp4'], 'MPEG-4');
+        clusterNum = sprintf('%d',cluster);
+        
+        v = VideoWriter(['tscHet_Gait', clusterNum, '_', boutNum, '.mp4'], 'MPEG-4');
         v.FrameRate = 10;
         open(v);
         % slot = 1:velTscHet_HIGH(:,1);
@@ -114,7 +116,7 @@ for bout = 1:length(permaList)
             h4 = scatter(ff(4,1,k), ff(4,2,k), 'r'); % this is 10
 
             % legend('Hindpaws','Forepaws', 'Location','NorthWest')
-            title('Cntnap Het')
+            title('TscHet - Gait 2')
             xlim([0 1000])
             ylim([0 1200])
             frame = getframe(gcf);
@@ -131,6 +133,11 @@ for bout = 1:length(permaList)
         close(v);
         
     end
+    
+    if length(dir) >= 17
+        break
+    end
+    
 end
 
 
