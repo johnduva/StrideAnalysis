@@ -17,7 +17,7 @@ phenotypes = [convertCharsToStrings('C57'), convertCharsToStrings('TscHet'), ...
     convertCharsToStrings('Cntnap2Neg') ];
 
 %% ASD_all, phenos, or Cntnap2_all
-pORa = Cntnap2_all;
+pORa = phenos;
 % Het(1), Homo(2), or Neg(3)
 phe = 1;
 % Make sure using correct phenotype
@@ -41,7 +41,7 @@ for an = 1:length(pORa{1,phe}(1,:))
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % (2) For each paw, calculate which frames are peaks/valleys
         for k = 1:numLimbs                 
-            [maxpkx{k}, minpkx{k}] = peakdet(preY(:,k), 8); 
+            [maxpkx{k}, minpkx{k}] = peakdet_John(preY(:,k), 8); 
             % Do not consider first peak if frame of first peak < 1 
             if maxpkx{k}(1,1) <= 5
                 maxpkx{k} = cat(2,maxpkx{k}(2:end,1), maxpkx{k}(2:end,2));
@@ -66,7 +66,7 @@ for an = 1:length(pORa{1,phe}(1,:))
         % Extract the name of the file by day for the session, and zero pad it
         vid = sprintf('%04d',cell2mat(files_by_day(pORa{phe}(1,an),day)));
         % Load rotVal from proper file
-        load(['/Users/johnduva/Desktop/C57vids/OFT-', vid, '-00_box_aligned_info.mat'], 'mouseInfo')
+        load(['/Users/johnduva/Desktop/Stride Figures/C57vids/OFT-', vid, '-00_box_aligned_info.mat'], 'mouseInfo')
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Change coordinates to real space
@@ -108,7 +108,7 @@ for an = 1:length(pORa{1,phe}(1,:))
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Make scatterplot for each limb: stride length vs velocity:
         colors = {'r','b','g','k'};
-        for k = 1:1 %numLimbs
+        for k = 1:numLimbs
             strideVsVel = zeros( size(maxpkx{1,k},1), 2);
             
             % (A) For current paw, if index of first min < index of first max...

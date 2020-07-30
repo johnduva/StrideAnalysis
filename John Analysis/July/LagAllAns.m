@@ -4,7 +4,7 @@ clearvars -except allTracks correctedTens5 keepersOnly z Cntnap2_all ASD_all phe
 % phenos, ASD_all, or Cntnap2_all
 pORa = ASD_all;
 % Het(1), Homo(2), or Neg(3)
-phe = 1;
+phe = 2;
 day = 1;
 fprintf('%d animals in current phenotype:\n', length(pORa{1,phe}(1,:)));
 permaList = nan(1,5);
@@ -84,16 +84,16 @@ for an = 1 : length(pORa{1,phe}(1,:))
     
 end
 permaList(1,:) = [];
-save('permaList_tscHet.mat', 'permaList')
+save('permaList_tscHomo.mat', 'permaList')
 
 %% Plot avg speed versus lag
 z = z+1;
 figure(z)
-scatter(permaList(:,1), permaList(:,2), 10 )
+scatter(permaList(:,1), permaList(:,2), 10, 'x', 'b' )
 title('TscHet Velocity vs Lag (n=17)')
 xlabel('Velocity (m/s)')
 ylabel('Lag (radians)')
-ylim([-3 0])
+ylim([-3 1])
 xlim([0 .35])
 legend('off')
 

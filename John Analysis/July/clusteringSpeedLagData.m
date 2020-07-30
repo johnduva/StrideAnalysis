@@ -2,7 +2,7 @@
 
 % Set the dataset to 'X'
 X = permaList;
-clusters = 4;
+clusters = 5;
 
 opts = statset('Display','final');
 [idx,C] = kmeans(X(:,1:2),clusters,'Distance','cityblock',...
@@ -15,7 +15,7 @@ point_size=5;
 test = [0.9290,0.6940, 0.1250];
 
 figure;
-plot(X(idx==1,1),X(idx==1,2),'k.','MarkerSize',point_size)
+plot(X(idx==1,1),X(idx==1,2),'g.','MarkerSize',point_size)
 hold on
 plot(X(idx==2,1),X(idx==2,2),'b.','MarkerSize',point_size)
 hold on
@@ -23,14 +23,15 @@ plot(X(idx==3,1),X(idx==3,2),'r.','MarkerSize',point_size)
 hold on
 plot(X(idx==4,1),X(idx==4,2),'m.','MarkerSize',point_size)
 hold on
-plot(X(idx==5,1),X(idx==5,2),'g.','MarkerSize',point_size)
+plot(X(idx==5,1),X(idx==5,2),'k.','MarkerSize',point_size)
 hold on
 plot(C(:,1),C(:,2),'kx',...
      'Color', 'k','MarkerSize',12,'LineWidth',2) 
-legend('Cluster 1','Cluster 2','Cluster 3', 'Cluster 4', 'Centroids',...
+legend('Cluster 1','Cluster 2','Cluster 3', 'Cluster 4', 'Cluster 5', 'Centroids',...
        'Location','SE')
-title 'Cluster Assignments and Centroids'
-% ylim([-2.5 0])
+title 'Cluster Assignments and Centroids - TscHomo'
+ylim([-3.5 1])
+xlim([.0 .3])
 hold off
 
 %% Loop through each bout in permaList and play the videos of the bouts assigned to the cluster
@@ -45,12 +46,12 @@ hold off
 % load('/Users/johnduva/Git/StrideAnalysis/John Analysis/Mat Files/Cntnap2_all.mat')
 
 % Which gait/cluster do we want to aggregate movies of? 
-cluster = 2;
+cluster = 5;
 
 % For each bout in permaList, identify if in current cluster; if so, create movie
 for bout = 1:length(permaList)
     % if that bout is a 0 lag bout
-    if idx(bout)==cluster
+    if idx(bout)==cluster && mod(bout,4)==0
         % See what the current bout is
         disp(bout);
         disp(permaList(bout, 3:4));
@@ -59,7 +60,7 @@ for bout = 1:length(permaList)
         % phenos, ASD_all, or Cntnap2_all
         pORa = ASD_all;
         % Het(1), Homo(2), or Neg(3)
-        phe = 1; day = 1;
+        phe = 2; day = 1;
         
         allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 3]);
 
@@ -101,10 +102,10 @@ for bout = 1:length(permaList)
         boutNum = sprintf('%04d',bout);
         clusterNum = sprintf('%d',cluster);
         
-        v = VideoWriter(['tscHet_Gait', clusterNum, '_', boutNum, '.mp4'], 'MPEG-4');
+        v = VideoWriter(['tscHomo_Gait5_', boutNum, '.mp4'], 'MPEG-4');
         v.FrameRate = 10;
         open(v);
-        % slot = 1:velTscHet_HIGH(:,1);
+        
         % Generate a set of frames, get the frame from the figure, and then write each frame to the file.
         for k = permaList(bout,3) : permaList(bout,4)
             h1 = scatter(ff(1,1,k), ff(1,2,k), 'r'); % this is 5
@@ -116,7 +117,7 @@ for bout = 1:length(permaList)
             h4 = scatter(ff(4,1,k), ff(4,2,k), 'r'); % this is 10
 
             % legend('Hindpaws','Forepaws', 'Location','NorthWest')
-            title('TscHet - Gait 2')
+            title('TscHomo - Gait 5')
             xlim([0 1000])
             ylim([0 1200])
             frame = getframe(gcf);
@@ -127,6 +128,11 @@ for bout = 1:length(permaList)
             label1 = 'Frame = %d';
             str = sprintf(label1, k);
             annotation('textbox',[.75 .8 .1 .1],'string',str, 'Tag', 'stream')
+            
+%             delete(findall(gcf,'Tag','stream'));
+            label2 = 'Bout Lag = %f';
+            str = sprintf(label2, permaList(bout,2));
+            annotation('textbox',[.15 .1 .1 .1],'string',str, 'Tag', 'stream')
             drawnow;
         end
 
@@ -134,9 +140,9 @@ for bout = 1:length(permaList)
         
     end
     
-    if length(dir) >= 17
-        break
-    end
+%     if length(dir) >= 20
+%         break
+%     end
     
 end
 
