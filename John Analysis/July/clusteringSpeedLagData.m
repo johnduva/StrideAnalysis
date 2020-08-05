@@ -2,7 +2,7 @@
 
 % Set the dataset to 'X'
 X = permaList;
-clusters = 5;
+clusters = 4;
 
 opts = statset('Display','final');
 [idx,C] = kmeans(X(:,1:2),clusters,'Distance','cityblock',...
@@ -46,7 +46,7 @@ hold off
 % load('/Users/johnduva/Git/StrideAnalysis/John Analysis/Mat Files/Cntnap2_all.mat')
 
 % Which gait/cluster do we want to aggregate movies of? 
-cluster = 5;
+cluster = 3;
 
 % For each bout in permaList, identify if in current cluster; if so, create movie
 for bout = 1:length(permaList)
@@ -60,7 +60,7 @@ for bout = 1:length(permaList)
         % phenos, ASD_all, or Cntnap2_all
         pORa = ASD_all;
         % Het(1), Homo(2), or Neg(3)
-        phe = 2; day = 1;
+        phe = 1; day = 1;
         
         allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 3]);
 
@@ -102,7 +102,7 @@ for bout = 1:length(permaList)
         boutNum = sprintf('%04d',bout);
         clusterNum = sprintf('%d',cluster);
         
-        v = VideoWriter(['tscHomo_Gait5_', boutNum, '.mp4'], 'MPEG-4');
+        v = VideoWriter(['tscHet_Gait3_', boutNum, '.mp4'], 'MPEG-4');
         v.FrameRate = 10;
         open(v);
         
@@ -117,7 +117,7 @@ for bout = 1:length(permaList)
             h4 = scatter(ff(4,1,k), ff(4,2,k), 'r'); % this is 10
 
             % legend('Hindpaws','Forepaws', 'Location','NorthWest')
-            title('TscHomo - Gait 5')
+            title('TscHet - Gait 3')
             xlim([0 1000])
             ylim([0 1200])
             frame = getframe(gcf);

@@ -11,6 +11,8 @@ permaList = nan(1,5);
 
 for an = 1 : length(pORa{1,phe}(1,:)) 
     disp(an);
+    % 5==left_forepaw; 6==right_forepaw; 9==left_hindpaw; 10==right_hindpaw
+    %         1                2                 3                 4
     allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 3]);
     paws = [ zscore(squeeze(allPaws(2,2,:))), zscore(squeeze(allPaws(2,3,:))) ];
 
@@ -49,7 +51,7 @@ for an = 1 : length(pORa{1,phe}(1,:))
     % Create skeleton: each row will contain a lag and a speed to create a scatterplot
     temp_strides = nan(1,4);
     count = 1;
-    for k = 1 : 5: min( [length(maxpkx{1,2}); length(maxpkx{1,1})]  )-5
+    for k = 1 : 5 : min( [length(maxpkx{1,2}); length(maxpkx{1,1})]  )-5
 
         % Forepaw vector of normalized distances from TTI from one max to the next
         v1 = paws(maxpkx{1,1}(k,1) : maxpkx{1,1}(k+5,1) ,1);
@@ -58,12 +60,25 @@ for an = 1 : length(pORa{1,phe}(1,:))
         start = maxpkx{1,1}(k,1);
         finish = maxpkx{1,1}(k+5,1);
         
-        % Use 'xcorr' function to get the lag for each iteration (stride)
-        [c, lags]  = xcorr(v1, v2, 'normalized');
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %          Use 'xcorr' function to get the lag for each iteration (stride)         %        
+        [c, lags] = xcorr(v1, v2, 'normalized');
         % Get the max value and its index:
         [~,i] = max(c);
         t = i-length(v1);
+        
+        [m,s] = normfit(c);
+        y = normpdf(c,m,s);
+        [~,i] = max(y);
+        t = i-length(c);
 
+        plot(c,y,'.');
+        hold on;
+        plot(lags,c)
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         velocity = mean(  vel(maxpkx{1,1}(k,1):maxpkx{1,1}(k+5,1))  );
 
         numFrames = maxpkx{1,1}(k+5,1) - maxpkx{1,1}(k,1);
