@@ -10,7 +10,7 @@ load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/filenames
 load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/weights.mat');
 
 load('/Users/johnduva/Git/StrideAnalysis/John Analysis/Mat Files/phenosAll.mat')  % phenos
-load('/Users/johnduva/Git/StrideAnalysis/John Analysis/Mat Files/ASD_all.mat') 
+load('/Users/johnduva/Git/StrideAnalysis/John Analysis/Mat Files/ASD_all.mat')
 load('/Users/johnduva/Git/StrideAnalysis/John Analysis/Mat Files/Cntnap2_all.mat')
 
 load('/Users/johnduva/iCloud Drive (Archive) - 1/Desktop/mkislin Files/group_by_day.mat'); % phenotype

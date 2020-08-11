@@ -7,7 +7,7 @@ pORa = ASD_all;
 phe = 2;
 day = 1;
 fprintf('%d animals in current phenotype:\n', length(pORa{1,phe}(1,:)));
-permaList = nan(1,5);
+PL_tscHomo = nan(1,5);
 
 for an = 1 : length(pORa{1,phe}(1,:)) 
     disp(an);
@@ -62,19 +62,26 @@ for an = 1 : length(pORa{1,phe}(1,:))
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %          Use 'xcorr' function to get the lag for each iteration (stride)         %        
-        [c, lags] = xcorr(v1, v2, 'normalized');
-        % Get the max value and its index:
-        [~,i] = max(c);
-        t = i-length(v1);
+        % Generate vector 'c'
+        [c, lags] = xcorr(v1, v2);
+        % Resample 'c' by interpolating with a factor of 100 (same for lags)
+        cnew = interp(c,100);
+        lags_interp = interp(lags,100);
+        % Get the index of the max value and use it to find the (now more precise) lag
+        [~,i] = max(cnew);
+        t = lags_interp(i);
         
-        [m,s] = normfit(c);
-        y = normpdf(c,m,s);
-        [~,i] = max(y);
-        t = i-length(c);
-
-        plot(c,y,'.');
-        hold on;
-        plot(lags,c)
+%         [~,i] = max(c);
+%         t = i-length(v1);
+%         
+%         [m,s] = normfit(c);
+%         y = normpdf(c,m,s);
+%         [~,i] = max(y);
+%         t = i-length(c);
+% 
+%         plot(c,y,'.');
+%         hold on;
+%         plot(lags,c)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -95,21 +102,20 @@ for an = 1 : length(pORa{1,phe}(1,:))
     end
     
     % Add strides from this animal to the permanent list
-    permaList = [permaList; rmoutliers(temp_strides);];
+    PL_tscHomo = [PL_tscHomo; rmoutliers(temp_strides);];
     
 end
-permaList(1,:) = [];
-save('permaList_tscHomo.mat', 'permaList')
+PL_tscHomo(1,:) = [];
+save('PL_tscHomo.mat', 'PL_tscHomo')
 
 %% Plot avg speed versus lag
-z = z+1;
 figure(z)
-scatter(permaList(:,1), permaList(:,2), 10, 'x', 'b' )
-title('TscHet Velocity vs Lag (n=17)')
+scatter(PL_tscHomo(:,1), PL_tscHomo(:,2), 10, 'x', 'b' )
+title('CntnapNeg Velocity vs Lag (n=17)')
 xlabel('Velocity (m/s)')
 ylabel('Lag (radians)')
-ylim([-3 1])
-xlim([0 .35])
+ylim([-3.5 1])
+xlim([0 .4])
 legend('off')
 
 % Include r on plot
@@ -119,16 +125,16 @@ legend('off')
 % annotation('textbox', [0.8, 0.8, 0.1, 0.1], 'String', str)
 
 % Include mean lag on plot
-meanLag = mean(permaList(:,2));
+meanLag = mean(PL_tscHomo(:,2));
 str2 = sprintf( 'avg lag = %1.2f', meanLag);
 annotation('textbox', [0.15, 0.8, 0.1, 0.1], 'String', str2)
 
 % Include mean speed on plot
-meanSpeed = mean(permaList(:,1));
+meanSpeed = mean(PL_tscHomo(:,1));
 str3 = sprintf( 'avg vel = %1.2f', meanSpeed);
 annotation('textbox', [0.7, 0.15, 0.2, 0.05], 'String', str3)
 
-% saveas(gcf, )
+saveas(gcf, 'cntnapHomo.png')
 
 %% Plot entire series with maximums indicated on figure
 figure(2)
