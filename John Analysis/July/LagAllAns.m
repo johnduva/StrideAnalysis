@@ -1,13 +1,13 @@
 %% Create plot of avg velocity vs. xcorr lag per stride phase
-clearvars -except allTracks correctedTens5 keepersOnly z Cntnap2_all ASD_all phenos permaList
+clearvars -except allTracks correctedTens5 keepersOnly z Cntnap2_all ASD_all phenos permaList files_by_day
 
 % phenos, ASD_all, or Cntnap2_all
 pORa = ASD_all;
 % Het(1), Homo(2), or Neg(3)
-phe = 2;
+phe = 1;
 day = 1;
 fprintf('%d animals in current phenotype:\n', length(pORa{1,phe}(1,:)));
-PL_tscHomo = nan(1,5);
+PL_tscHet = nan(1,6);
 
 for an = 1 : length(pORa{1,phe}(1,:)) 
     disp(an);
@@ -16,7 +16,7 @@ for an = 1 : length(pORa{1,phe}(1,:))
     allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 3]);
     paws = [ zscore(squeeze(allPaws(2,2,:))), zscore(squeeze(allPaws(2,3,:))) ];
 
-    % Get the minpeaks so we can consider each 2π phase
+    % Get the maxpeaks so we can consider each 2π phase
     for k = 1:2
         [maxx, maxIndex] = findpeaks(paws(:,k),'MinPeakDistance', 9);
         maxpkx{k} = [maxIndex, maxx];
@@ -34,6 +34,35 @@ for an = 1 : length(pORa{1,phe}(1,:))
         end
     end
 
+     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Extract the name of the file by day for the session, and zero pad it
+    vid = sprintf('%04d',cell2mat(files_by_day(pORa{phe}(1,an),day)));
+    % Load rotVal from proper file
+    load(['/Users/johnduva/Desktop/Stride Figures/ASDvids/OFT-', vid, '-00_box_aligned_info.mat'], 'mouseInfo')
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Change coordinates to real space
+    allPaws2 = permute(allPaws,[2 1 3]);
+    tempr = deg2rad(mouseInfo.rotVal);
+    tempr = tempr(keepersOnly{pORa{phe}(1,an),day});
+    midJoints = double(allPaws2) - 200;
+
+    jx = double(squeeze(midJoints(:,1,:)));
+    jy = double(squeeze(midJoints(:,2,:)));
+    ff = zeros(size(allPaws2));
+
+    for i = 1:length(jx)
+        [jp2j(:,i), jp2i(:,i)] = cart2pol(jx(:,i)',jy(:,i)');
+        tjp(:,i) = jp2j(:,i) + repmat(tempr(i),[4 1]);
+        [jp3j(:,i), jp3i(:,i)] = pol2cart(tjp(:,i),jp2i(:,i));
+        ogc1(:,i) = jp3j(:,i) + centroidsF2(i,1);
+        ogc2(:,i) = jp3i(:,i) + centroidsF2(i,2);
+    end
+
+    ff(:,1,:) = ogc1; 
+    ff(:,2,:) = ogc2;
+    clearvars jp2i jp2j jp3j jp3i jx jy midJoints ogc1 ogc2 tempt tempr tempCents tjp;
+    
     % Convert the centroid locations to velocities
     % Get change in x-coordinate per frame (negative just means a change to the left)
     vx = gradient(centroidsF2(:,1));
@@ -68,8 +97,8 @@ for an = 1 : length(pORa{1,phe}(1,:))
         cnew = interp(c,100);
         lags_interp = interp(lags,100);
         % Get the index of the max value and use it to find the (now more precise) lag
-        [~,i] = max(cnew);
-        t = lags_interp(i);
+        [~,index] = max(cnew);
+        t = lags_interp(index);
         
 %         [~,i] = max(c);
 %         t = i-length(v1);
@@ -84,6 +113,13 @@ for an = 1 : length(pORa{1,phe}(1,:))
 %         plot(lags,c)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Average stride length for this five stride bout:
+        fiveDists = [];
+        for peaks = 1 : 5
+            xdist = abs( ff(1, 1, maxpkx{1,1}(k+peaks)) - ff(1, 1, maxpkx{1,1}(k+peaks-1)));
+            ydist = abs( ff(1, 2, maxpkx{1,1}(k+peaks)) - ff(1, 2, maxpkx{1,1}(k+peaks-1)));
+            fiveDists = [fiveDists, sqrt( xdist^2 + ydist^2)*.51];
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         velocity = mean(  vel(maxpkx{1,1}(k,1):maxpkx{1,1}(k+5,1))  );
@@ -97,27 +133,57 @@ for an = 1 : length(pORa{1,phe}(1,:))
         temp_strides(count,3) = start;
         temp_strides(count,4) = finish;
         temp_strides(count,5) = an;
+        temp_strides(count,6) = mean(fiveDists);
         
         count = count + 1;
     end
     
     % Add strides from this animal to the permanent list
-    PL_tscHomo = [PL_tscHomo; rmoutliers(temp_strides);];
+    PL_tscHet = [PL_tscHet; rmoutliers(temp_strides);];
     
 end
-PL_tscHomo(1,:) = [];
-save('PL_tscHomo.mat', 'PL_tscHomo')
+PL_tscHet(1,:) = [];
+save('PL_tscHet.mat', 'PL_tscHet')
 
 %% Plot avg speed versus lag
-figure(z)
-scatter(PL_tscHomo(:,1), PL_tscHomo(:,2), 10, 'x', 'b' )
-title('CntnapNeg Velocity vs Lag (n=17)')
+figure(1)
+scatter(PL_tscNeg(:,1), PL_tscNeg(:,2), 2, 'o', 'r' )
+title('Negatives: Velocity vs Lag')
 xlabel('Velocity (m/s)')
 ylabel('Lag (radians)')
-ylim([-3.5 1])
-xlim([0 .4])
-legend('off')
+ylim([-3.5 .5])
+xlim([.05 .4])
+% legend('Tsc')
+hold on
 
+scatter(PL_cntnapHet(:,1), PL_cntnapHet(:,2), 2, 'o', 'b' )
+title('Negatives: Velocity vs Lag')
+xlabel('Velocity (m/s)')
+ylabel('Lag (radians)')
+ylim([-3.5 .5])
+xlim([.05 .4])
+% legend('Tsc')
+saveas(gcf, 'negs.png')
+
+
+%%
+speed = PL_tscHet(:,1);
+lag = PL_tscHet(:,2);
+strideLength = PL_tscHet(:,6);
+
+scatter(speed, lag, 2, strideLength)
+title('Homozygotes: Speed vs Lag vs Stride Length')
+xlabel('Speed (m/s)')
+ylabel('Lag (radians)')
+c = colorbar;
+c.Label.String = 'Stride Length (mm)';
+ylim([-3.5 0.5])
+xlim([0 .4])
+% saveas(gcf, 'cntnapNeg_3plot.png')
+
+
+
+%%
 % Include r on plot
 % r = corrcoef(permaList(:,1), permaList(:,2));
 % r = r(1,2);
@@ -125,16 +191,16 @@ legend('off')
 % annotation('textbox', [0.8, 0.8, 0.1, 0.1], 'String', str)
 
 % Include mean lag on plot
-meanLag = mean(PL_tscHomo(:,2));
+meanLag = mean(PL_tscHet(:,2));
 str2 = sprintf( 'avg lag = %1.2f', meanLag);
 annotation('textbox', [0.15, 0.8, 0.1, 0.1], 'String', str2)
 
 % Include mean speed on plot
-meanSpeed = mean(PL_tscHomo(:,1));
+meanSpeed = mean(PL_tscHet(:,1));
 str3 = sprintf( 'avg vel = %1.2f', meanSpeed);
 annotation('textbox', [0.7, 0.15, 0.2, 0.05], 'String', str3)
 
-saveas(gcf, 'cntnapHomo.png')
+% saveas(gcf, 'cntnapHomo.png')
 
 %% Plot entire series with maximums indicated on figure
 figure(2)

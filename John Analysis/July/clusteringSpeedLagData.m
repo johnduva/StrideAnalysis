@@ -1,14 +1,5 @@
 %% Cluster the Speed vs Lag data in permaList
- 
-% load('/Users/johnduva/Git/StrideAnalysis/John Analysis/August/PL_tscHet.mat')
-
-% Z-score the data
-X = zscore(PL_tscHet(:,1:2));
-scatter(X(:,1), X(:,2), 1)
-
-
-
-%% Manual clustering of data
+% Manual clustering of data
 X = PL_tscHet(:,1:2);
 Xabove = [];
 Xbelow = [];
@@ -20,17 +11,43 @@ for i = 1: length(X)
     end
 end
 
-s = scatter(Xabove(:,1), Xabove(:,2), 2);
+s = scatter(Xabove(:,1), Xabove(:,2), 1);
 s.MarkerFaceColor = 'blue';
+lsline; 
 hold on;
-s = scatter(Xbelow(:,1), Xbelow(:,2), 2);
+
+s = scatter(Xbelow(:,1), Xbelow(:,2), 1);
 s.MarkerFaceColor = 'red';
-legend('Cluster 1','Cluster 2', 'Centroids',...
+lsline;
+
+legend('Cluster 1','LS Line 1','Cluster 2', 'LS Line 2',...
        'Location','SE')
-title 'Cluster Assignments - TscHet'
-% ylim([-3.5 1])
-% xlim([.0 .3])
+title 'Cluster Assignments - TscHomo'
+xlabel('Speed')
+ylabel('Lag (radians)')
+ylim([-3.5 .5])
+xlim([.05 .4])
 hold off
+% saveas(gcf,'cntnapHomoScatter.png')
+
+%% Heatmaps 
+
+% Doesn't work and is not what intended
+% figure(1);
+% heatscatter(Xabove(:,1), Xabove(:,2), pwd, 'heatmap', '50','5','o',1,1,'',''); 
+% hold all; 
+% heatscatter(Xbelow(:,1), Xbelow(:,2), pwd, 'heatmap', '50','5','o',1,1,'','');
+% xlim([])
+% ylim([])
+
+% Now try densityplot():
+densityplot(X(:,1), X(:,2));
+ylim([-3.5 .5])
+xlim([.05 .4])
+% hold on;
+% densityplot(Xbelow(:,1), Xbelow(:,2));
+
+
 
 %%
 clusters = 2;

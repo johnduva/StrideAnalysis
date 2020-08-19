@@ -11,13 +11,13 @@
 % (3) Pull the real space centroid locations from 'allTracks'
 
 Fs = 80;
-phenotypes = [convertCharsToStrings('C57'), convertCharsToStrings('TscHet'), ...
-    convertCharsToStrings('TscHomo'), convertCharsToStrings('TscNeg'), ...
-    convertCharsToStrings('Cntnap2Het'), convertCharsToStrings('Cntnap2Homo'), ...
-    convertCharsToStrings('Cntnap2Neg') ];
+% phenotypes = [convertCharsToStrings('C57'), convertCharsToStrings('TscHet'), ...
+%     convertCharsToStrings('TscHomo'), convertCharsToStrings('TscNeg'), ...
+%     convertCharsToStrings('Cntnap2Het'), convertCharsToStrings('Cntnap2Homo'), ...
+%     convertCharsToStrings('Cntnap2Neg') ];
 
-%% ASD_all, phenos, or Cntnap2_all
-pORa = phenos;
+% ASD_all, phenos, or Cntnap2_all
+pORa = ASD_all;
 % Het(1), Homo(2), or Neg(3)
 phe = 1;
 % Make sure using correct phenotype
@@ -25,7 +25,7 @@ disp(length(pORa{1,phe}(1,:)))
    
 %%
 % The 'Pheno' column will be the corresponding string within list 'phenotypes'  
-pheno = phenotypes(phe);
+% pheno = phenotypes(phe);
 % Create a sekeleton for the output matrix:
 strideVelFinal = zeros(1, 5); 
 for an = 1:length(pORa{1,phe}(1,:)) 
@@ -66,7 +66,7 @@ for an = 1:length(pORa{1,phe}(1,:))
         % Extract the name of the file by day for the session, and zero pad it
         vid = sprintf('%04d',cell2mat(files_by_day(pORa{phe}(1,an),day)));
         % Load rotVal from proper file
-        load(['/Users/johnduva/Desktop/Stride Figures/C57vids/OFT-', vid, '-00_box_aligned_info.mat'], 'mouseInfo')
+        load(['/Users/johnduva/Desktop/Stride Figures/ASDvids/OFT-', vid, '-00_box_aligned_info.mat'], 'mouseInfo')
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Change coordinates to real space
@@ -108,7 +108,7 @@ for an = 1:length(pORa{1,phe}(1,:))
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Make scatterplot for each limb: stride length vs velocity:
         colors = {'r','b','g','k'};
-        for k = 1:numLimbs
+        for k = 1:1 %numLimbs
             strideVsVel = zeros( size(maxpkx{1,k},1), 2);
             
             % (A) For current paw, if index of first min < index of first max...
@@ -130,15 +130,32 @@ for an = 1:length(pORa{1,phe}(1,:))
                         if sqrt( xdist^2 + ydist^2)*.51 > 150
                             continue
                         else
+                            % individual stride length:
                             strideVsVel(i,1) = sqrt( xdist^2 + ydist^2)*.51;
                             % mean centroid velocity during that stride
-                            strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i,1), 1));
+                            strideVsVel(i,2) = mean( vel(maxpkx{1,k}(i,1) : maxpkx{1,k}(i+1,1) ));
                             % Save weight, pheno (dummy), and animal number
                             strideVsVel(i,3) = cell2mat(weights_WT_ASD(pORa{phe}(1,an)));
-                            if phe == 1 && length(pORa) == length(pORa)
-                               strideVsVel(i,4) = pheno; % TscHet
-                            end
-                            strideVsVel(i,5) = pORa{phe}(1,an);
+                            % keep track of which animal it is
+                            strideVsVel(i,4) = pORa{phe}(1,an);
+                            
+                            %%%%%%% Determine the lag for this stride %%%%%%% 
+                            % v1 and v2 are the egocentric distances of right forepaw 
+                            % and left hindpaw from TTI (to see: plot(v1); hold on; plot(v2);)
+                            v1 = preY(maxpkx{1,k}(i) : maxpkx{1,k}(i+1), 1 );
+                            v2 = preY(maxpkx{1,k}(i) : maxpkx{1,k}(i+1), 4 );
+                            % Use 'xcorr' function to get the lag for each iteration (stride)         %        
+                            % Generate vector 'c'
+                            [c, lags] = xcorr(v1, v2);
+                            % Resample 'c' by interpolating with a factor of 100 (same for lags)
+                            cnew = interp(c,100);
+                            lags_interp = interp(lags,100);
+                            % Get the index of the max value and use it to find the (now more precise) lag
+                            [~,i] = max(cnew);
+                            t = lags_interp(i);
+                            
+                            % set the fifth column as the amount of lag for that stride
+                            strideVsVel(i,5) = t;
                         end
                     end
                 end
@@ -160,12 +177,26 @@ for an = 1:length(pORa{1,phe}(1,:))
                             continue
                         else
                             strideVsVel(i,1) = sqrt( xdist^2 + ydist^2)*.51;
-                            strideVsVel(i,2) = mean( vel(minpkx{1,k}(i,1) : maxpkx{1,k}(i+1,1), 1));
+                            strideVsVel(i,2) = mean( vel(maxpkx{1,k}(i,1) : maxpkx{1,k}(i+1,1), 1));
                             strideVsVel(i,3) = cell2mat(weights_WT_ASD(pORa{phe}(1,an)));
-                            if phe == 1 && length(pORa) == length(pORa)
-                               strideVsVel(i,4) = pheno; % TscHet
-                            end
-                            strideVsVel(i,5) = pORa{phe}(1,an);
+                            strideVsVel(i,4) = pORa{phe}(1,an);
+                            
+                            % plot(v1); hold on; plot(v2);
+                            % plot(zscore(v1)); hold on; plot(zscore(v2));
+                            v1 = preY(maxpkx{1,k}(i) : maxpkx{1,k}(i+1), 1 );
+                            v2 = preY(maxpkx{1,k}(i) : maxpkx{1,k}(i+1), 4 );
+                            % Use 'xcorr' function to get the lag for each iteration (stride)         %        
+                            % Generate vector 'c'
+                            [c, lags] = xcorr(v1, v2);
+                            % Resample 'c' by interpolating with a factor of 100 (same for lags)
+                            cnew = interp(c,100);
+                            lags_interp = interp(lags,100);
+                            % Get the index of the max value and use it to find the (now more precise) lag
+                            [~,index] = max(cnew);
+                            t = lags_interp(index);
+                            
+                            % set the fifth column as the amount of lag for that stride
+                            strideVsVel(i,5) = t;
                         end
                     end
                 end
@@ -206,7 +237,14 @@ for i = 1: height(fullTbl3)
     end
 end
 
-
+%%
+x = strideVelFinal2(:,2);
+y = strideVelFinal2(:,1);
+z = strideVelFinal2(:,6);
+scatter3(x,y,z, 1, 'o')
+xlabel('speed')
+ylabel('stride length')
+zlabel('lag')
 
 %%
 % x = strideVelFinal(:,2);
