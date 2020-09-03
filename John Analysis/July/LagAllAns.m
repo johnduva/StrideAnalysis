@@ -1,20 +1,23 @@
 %% Create plot of avg velocity vs. xcorr lag per stride phase
 clearvars -except allTracks correctedTens5 keepersOnly z Cntnap2_all ASD_all phenos permaList files_by_day
 
-% phenos, ASD_all, or Cntnap2_all
+% Choose which phenotype to analyze: phenos, ASD_all, or Cntnap2_all
 pORa = ASD_all;
-% Het(1), Homo(2), or Neg(3)
-phe = 1;
+% Choose zygosity: Het(1), Homo(2), or Neg(3)
+phe = 2;
 day = 1;
 fprintf('%d animals in current phenotype:\n', length(pORa{1,phe}(1,:)));
-PL_tscHet = nan(1,6);
+PL_tscHomo = NaN(1,6) ;
 
-for an = 1 : length(pORa{1,phe}(1,:)) 
+for an = 1 : length( pORa{1,phe}(1,:) ) 
     disp(an);
-    % 5==left_forepaw; 6==right_forepaw; 9==left_hindpaw; 10==right_hindpaw
+    % 5==left_forepaw; 6==right_forepaw; 9==left_hindpaw; 10==right_hindpaw (this has been confirmed)
     %         1                2                 3                 4
+    % Get the trajectories of all four paws (colons represent taking all xy coorindates and all frames)
     allPaws = permute( correctedTens5{pORa{phe}(1,an),day}([5,6,9,10], : , :), [2 1 3]);
-    paws = [ zscore(squeeze(allPaws(2,2,:))), zscore(squeeze(allPaws(2,3,:))) ];
+    % Reshape them by reducing to two dimensional matrix: 'paws' (if you zscore 'paws', you can overlay them in the same space)
+    paws = [ squeeze(allPaws(2,1,:)), squeeze(allPaws(2,4,:))];
+    % plot(zscore(paws(:,1))); hold on; plot(zscore(paws(:,2)))
 
     % Get the maxpeaks so we can consider each 2π phase
     for k = 1:2
@@ -22,8 +25,7 @@ for an = 1 : length(pORa{1,phe}(1,:))
         maxpkx{k} = [maxIndex, maxx];
         clear maxx maxIndex
     end
-
-    %% Get the cross correlation of the y-values from maxpk(k) to maxpk(k+1)
+    
     % Get the centroid locations from 'keepersOnly' (only 27,525 instead of 95k)
     index = 1;
     for frame = 1: length(allTracks{pORa{phe}(1,an),day})
@@ -78,21 +80,22 @@ for an = 1 : length(pORa{1,phe}(1,:))
 
 
     % Create skeleton: each row will contain a lag and a speed to create a scatterplot
-    temp_strides = nan(1,4);
+%     temp_strides = nan(1,4);
+    temp_strides = nan(1,6);
     count = 1;
-    for k = 1 : 5 : min( [length(maxpkx{1,2}); length(maxpkx{1,1})]  )-5
+    for k = 1 : min( [length(maxpkx{1,1}); length(maxpkx{1,2}) ] ) -1
 
-        % Forepaw vector of normalized distances from TTI from one max to the next
-        v1 = paws(maxpkx{1,1}(k,1) : maxpkx{1,1}(k+5,1) ,1);
-        % Hind paw vector of normalized distances from TTI from one max to the next
-        v2 = paws(maxpkx{1,1}(k,1) : maxpkx{1,1}(k+5,1) ,2);
-        start = maxpkx{1,1}(k,1);
-        finish = maxpkx{1,1}(k+5,1);
+        % Paw vectors of normalized distances from TTI from one max to the next
+        v1 = zscore(paws( maxpkx{1,1}(k,1) : maxpkx{1,1}(k+1,1), 1));
+        v2 = zscore(paws( maxpkx{1,1}(k,1) : maxpkx{1,1}(k+1,1), 2));
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %          Use 'xcorr' function to get the lag for each iteration (stride)         %        
+        start = maxpkx{1,1}(k,1);
+        finish = maxpkx{1,1}(k+1,1);
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %         Use 'xcorr' function to get the lag for each iteration (stride)         %        
         % Generate vector 'c'
-        [c, lags] = xcorr(v1, v2);
+        [c, lags] = xcorr(zscore(v1), zscore(v2), 'coeff');
         % Resample 'c' by interpolating with a factor of 100 (same for lags)
         cnew = interp(c,100);
         lags_interp = interp(lags,100);
@@ -100,50 +103,38 @@ for an = 1 : length(pORa{1,phe}(1,:))
         [~,index] = max(cnew);
         t = lags_interp(index);
         
-%         [~,i] = max(c);
-%         t = i-length(v1);
-%         
-%         [m,s] = normfit(c);
-%         y = normpdf(c,m,s);
-%         [~,i] = max(y);
-%         t = i-length(c);
-% 
-%         plot(c,y,'.');
-%         hold on;
-%         plot(lags,c)
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Stride length 
+        xdist = abs( ff(1, 1, maxpkx{1,1}(k+1)) - ff(1, 1, maxpkx{1,1}(k)));
+        ydist = abs( ff(1, 2, maxpkx{1,1}(k+1)) - ff(1, 2, maxpkx{1,1}(k)));
+        distance = sqrt( xdist^2 + ydist^2) * .51;
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % Average stride length for this five stride bout:
-        fiveDists = [];
-        for peaks = 1 : 5
-            xdist = abs( ff(1, 1, maxpkx{1,1}(k+peaks)) - ff(1, 1, maxpkx{1,1}(k+peaks-1)));
-            ydist = abs( ff(1, 2, maxpkx{1,1}(k+peaks)) - ff(1, 2, maxpkx{1,1}(k+peaks-1)));
-            fiveDists = [fiveDists, sqrt( xdist^2 + ydist^2)*.51];
-        end
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        velocity = mean(  vel(maxpkx{1,1}(k,1):maxpkx{1,1}(k+5,1))  );
+        velocity = mean(  vel( maxpkx{1,1}(k,1) : maxpkx{1,1}(k+1,1) )  );
 
-        numFrames = maxpkx{1,1}(k+5,1) - maxpkx{1,1}(k,1);
-        radians = 2*pi*5/numFrames;
+        numFrames = maxpkx{1,1}(k+1,1) - maxpkx{1,1}(k,1);
+        radians = 2*pi/numFrames;
         
-        % Add lag and speed to a new row in 'strides'
+%         Add lag and speed to a new row in 'strides'
         temp_strides(count,1) = velocity;
-        temp_strides(count,2) = t*radians;
+        temp_strides(count,2) = t*radians; % lag
         temp_strides(count,3) = start;
         temp_strides(count,4) = finish;
         temp_strides(count,5) = an;
-        temp_strides(count,6) = mean(fiveDists);
+        temp_strides(count,6) = mean(distance); % average strid elength
         
         count = count + 1;
     end
     
     % Add strides from this animal to the permanent list
-    PL_tscHet = [PL_tscHet; rmoutliers(temp_strides);];
-    
+    PL_tscHomo = [PL_tscHomo; temp_strides];
 end
-PL_tscHet(1,:) = [];
-save('PL_tscHet.mat', 'PL_tscHet')
+PL_tscHomo(1,:) = [];
+% save('PL_tscHet.mat', 'PL_tscHet')
+
+
+
 
 %% Plot avg speed versus lag
 figure(1)
@@ -167,9 +158,9 @@ saveas(gcf, 'negs.png')
 
 
 %%
-speed = PL_tscHet(:,1);
-lag = PL_tscHet(:,2);
-strideLength = PL_tscHet(:,6);
+speed = PL_tscHomo(:,1);
+lag = PL_tscHomo(:,2);
+strideLength = PL_tscHomo(:,6);
 
 scatter(speed, lag, 2, strideLength)
 title('Homozygotes: Speed vs Lag vs Stride Length')
@@ -191,12 +182,12 @@ xlim([0 .4])
 % annotation('textbox', [0.8, 0.8, 0.1, 0.1], 'String', str)
 
 % Include mean lag on plot
-meanLag = mean(PL_tscHet(:,2));
+meanLag = mean(PL_tscHomo(:,2));
 str2 = sprintf( 'avg lag = %1.2f', meanLag);
 annotation('textbox', [0.15, 0.8, 0.1, 0.1], 'String', str2)
 
 % Include mean speed on plot
-meanSpeed = mean(PL_tscHet(:,1));
+meanSpeed = mean(PL_tscHomo(:,1));
 str3 = sprintf( 'avg vel = %1.2f', meanSpeed);
 annotation('textbox', [0.7, 0.15, 0.2, 0.05], 'String', str3)
 

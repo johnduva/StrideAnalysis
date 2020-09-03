@@ -101,9 +101,10 @@ for an = 1:length(pORa{1,phe}(1,:))
         clear vx vy;
         vel = fillmissing(vel,'linear');
         vel = movmedian(vel,Fs/2);
-        % from pixels per frame to 
-        %          mm per second
-        vel = vel * 80 * .51 / 1000;
+        % from pixels per frame to pixels per second
+        vel = vel * Fs;
+        % from pixels per second to mm per second
+        vel = vel * .51;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Make scatterplot for each limb: stride length vs velocity:
