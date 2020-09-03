@@ -1,4 +1,4 @@
-This repo is a collection of analysis scripts that intake LEAP coordinate locations and output (1) minimum and maximum peaks (euclidean distances from centroid) for all paws, (2) data structures for analyzing features of locomotion (i.e. stride length, animal velocity, stance width, paw synchrony, etc), (3) existing figures for comparing the aforementioned features, and (3) movies for analyzing degree of diagonal paw lag.
+This repo is a collection of analysis scripts that intake LEAP coordinate locations and output (1) minimum and maximum peaks (euclidean distances from centroid) for all paws, (2) data structures for analyzing features of locomotion (i.e. stride length, animal velocity, stance width, paw synchrony, etc.), (3) existing figures for comparing the aforementioned features, and (4) movies for analyzing degree of diagonal paw lag.
 
 The 'John Analysis' directory is comprised of:
  - .mat files == filtered data structs from 
